@@ -1,1 +1,2 @@
-SC2002-FCS2-Group4
+Both diagrams for this project should be created using draw.io for easy collaboration.
+https://app.diagrams.net/ or use the GitHub extension.
