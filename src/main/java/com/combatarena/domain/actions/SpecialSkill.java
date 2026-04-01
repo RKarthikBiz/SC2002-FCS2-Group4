@@ -3,6 +3,7 @@ package com.combatarena.domain.actions;
 import com.combatarena.domain.combatants.Combatant;
 import com.combatarena.domain.combatants.Warrior;
 import com.combatarena.domain.combatants.Wizard;
+import com.combatarena.util.GameConstants;
 
 import java.util.HashMap;
 import java.util.Map;
