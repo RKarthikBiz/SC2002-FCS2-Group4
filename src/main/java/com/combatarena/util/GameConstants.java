@@ -20,26 +20,26 @@ public final class GameConstants {
     // =========================================================================
 
     /** Warrior starting / maximum HP. */
-    public static final int WARRIOR_HP  = 200;
+    public static final int WARRIOR_HP  = 260;
 
     /** Warrior base attack stat. */
-    public static final int WARRIOR_ATK = 35;
+    public static final int WARRIOR_ATK = 40;
 
     /** Warrior base defense stat. */
     public static final int WARRIOR_DEF = 20;
 
     /** Warrior base speed stat (determines turn order). */
-    public static final int WARRIOR_SPD = 15;
+    public static final int WARRIOR_SPD = 30;
 
     // =========================================================================
     // Wizard base stats
     // =========================================================================
 
     /** Wizard starting / maximum HP. */
-    public static final int WIZARD_HP  = 150;
+    public static final int WIZARD_HP  = 200;
 
     /** Wizard base attack stat. */
-    public static final int WIZARD_ATK = 45;
+    public static final int WIZARD_ATK = 50;
 
     /** Wizard base defense stat. */
     public static final int WIZARD_DEF = 10;
@@ -52,13 +52,13 @@ public final class GameConstants {
     // =========================================================================
 
     /** Goblin starting / maximum HP. */
-    public static final int GOBLIN_HP  = 80;
+    public static final int GOBLIN_HP  = 55;
 
     /** Goblin base attack stat. */
-    public static final int GOBLIN_ATK = 20;
+    public static final int GOBLIN_ATK = 35;
 
     /** Goblin base defense stat. */
-    public static final int GOBLIN_DEF = 5;
+    public static final int GOBLIN_DEF = 15;
 
     /** Goblin base speed stat. */
     public static final int GOBLIN_SPD = 25;
@@ -68,16 +68,16 @@ public final class GameConstants {
     // =========================================================================
 
     /** Wolf starting / maximum HP. */
-    public static final int WOLF_HP  = 100;
+    public static final int WOLF_HP  = 40;
 
     /** Wolf base attack stat. */
-    public static final int WOLF_ATK = 30;
+    public static final int WOLF_ATK = 45;
 
     /** Wolf base defense stat. */
-    public static final int WOLF_DEF = 8;
+    public static final int WOLF_DEF = 5;
 
     /** Wolf base speed stat. */
-    public static final int WOLF_SPD = 30;
+    public static final int WOLF_SPD = 35;
 
     // =========================================================================
     // Skill / action tuning
