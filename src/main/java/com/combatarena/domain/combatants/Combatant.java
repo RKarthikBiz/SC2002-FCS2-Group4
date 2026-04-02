@@ -1,7 +1,7 @@
 package com.combatarena.domain.combatants;
 
-import com.combatarena.domain.statuseffects.StatusEffect;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -16,7 +16,7 @@ public abstract class Combatant {
     private int attack;
     private int defense;
     private int speed;
-    private List<StatusEffect> statusEffects;
+    private List<Object> statusEffects;
 
     /**
      * Constructor to initialize a combatant with core attributes.
@@ -32,17 +32,13 @@ public abstract class Combatant {
     }
 
     /**
-     * Reduces the combatant's HP based on damage amount and defense.
-     * Damage is reduced by a percentage of defense (10% per 1 defense point, minimum 0).
-     * 
-     * @param amount The base damage amount to apply
+     * Reduces HP by the provided post-mitigation damage amount.
+     * HP is clamped at 0.
+     *
+     * @param amount final damage value to apply
      */
     public void takeDamage(int amount) {
-        // TODO: Implementation required by someone else - damage calculation logic
-        // Defense reduces damage: each defense point reduces damage by 10% (capped at 90% reduction)
-        double defenseReduction = Math.min(0.9, defense * 0.1);
-        int actualDamage = Math.max(1, (int)(amount * (1 - defenseReduction)));
-        this.hp = Math.max(0, this.hp - actualDamage);
+        this.hp = Math.max(0, this.hp - Math.max(0, amount));
     }
 
     /**
@@ -70,10 +66,9 @@ public abstract class Combatant {
      * 
      * @param effect The status effect to apply
      */
-    public void applyStatusEffect(StatusEffect effect) {
-        // TODO: Implementation required by someone else - status effect application
+    public void applyStatusEffect(Object effect) {
         if (effect != null) {
-            effect.apply(this);
+            invokeEffectMethod(effect, "apply", this);
             statusEffects.add(effect);
         }
     }
@@ -84,10 +79,25 @@ public abstract class Combatant {
      * 
      * @param effect The status effect to add
      */
-    public void addStatusEffect(StatusEffect effect) {
-        // TODO: Implementation required by someone else - status effect collection management
+    public void addStatusEffect(Object effect) {
         if (effect != null && !statusEffects.contains(effect)) {
             statusEffects.add(effect);
+        }
+    }
+
+    /**
+     * Ticks all active effects and removes expired ones.
+     */
+    public void applyStatusEffects() {
+        Iterator<Object> iterator = statusEffects.iterator();
+        while (iterator.hasNext()) {
+            Object effect = iterator.next();
+            invokeEffectMethod(effect, "tick");
+
+            if (isEffectExpired(effect)) {
+                invokeEffectMethod(effect, "remove", this);
+                iterator.remove();
+            }
         }
     }
 
@@ -149,12 +159,13 @@ public abstract class Combatant {
         this.speed = speed;
     }
 
-    public List<StatusEffect> getStatusEffects() {
+    @SuppressWarnings("rawtypes")
+    public List getStatusEffects() {
         return new ArrayList<>(statusEffects);
     }
 
-    public void setStatusEffects(List<StatusEffect> statusEffects) {
-        this.statusEffects = new ArrayList<>(statusEffects);
+    public void setStatusEffects(List<?> statusEffects) {
+        this.statusEffects = new ArrayList<>(statusEffects == null ? new ArrayList<>() : statusEffects);
     }
 
     /**
@@ -162,10 +173,9 @@ public abstract class Combatant {
      * 
      * @param effect The status effect to remove
      */
-    public void removeStatusEffect(StatusEffect effect) {
-        // TODO: Implementation required by someone else - status effect removal
+    public void removeStatusEffect(Object effect) {
         if (effect != null) {
-            effect.remove(this);
+            invokeEffectMethod(effect, "remove", this);
             statusEffects.remove(effect);
         }
     }
@@ -184,5 +194,47 @@ public abstract class Combatant {
     public String toString() {
         return String.format("%s (HP: %d/%d, ATK: %d, DEF: %d, SPD: %d)",
                 name, hp, maxHp, attack, defense, speed);
+    }
+
+    private void invokeEffectMethod(Object effect, String methodName, Object... args) {
+        try {
+            for (java.lang.reflect.Method method : effect.getClass().getMethods()) {
+                if (!method.getName().equals(methodName)) {
+                    continue;
+                }
+
+                Class<?>[] parameterTypes = method.getParameterTypes();
+                if (parameterTypes.length != args.length) {
+                    continue;
+                }
+
+                boolean compatible = true;
+                for (int i = 0; i < parameterTypes.length; i++) {
+                    if (args[i] != null && !parameterTypes[i].isAssignableFrom(args[i].getClass())) {
+                        compatible = false;
+                        break;
+                    }
+                }
+
+                if (compatible) {
+                    method.invoke(effect, args);
+                    return;
+                }
+            }
+        } catch (ReflectiveOperationException e) {
+            throw new IllegalStateException("Failed to invoke effect method: " + methodName, e);
+        }
+    }
+
+    private boolean isEffectExpired(Object effect) {
+        try {
+            java.lang.reflect.Method method = effect.getClass().getMethod("isExpired");
+            Object result = method.invoke(effect);
+            return result instanceof Boolean && (Boolean) result;
+        } catch (NoSuchMethodException e) {
+            return false;
+        } catch (ReflectiveOperationException e) {
+            throw new IllegalStateException("Failed to check effect expiration", e);
+        }
     }
 }

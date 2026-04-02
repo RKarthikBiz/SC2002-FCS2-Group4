@@ -1,6 +1,6 @@
 package com.combatarena.domain.combatants;
 
-import com.combatarena.domain.items.Item;
+import com.combatarena.util.GameConstants;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,7 +10,7 @@ import java.util.List;
  */
 public abstract class Player extends Combatant {
     // Private attributes for encapsulation
-    private List<Item> inventory;
+    private List<Object> inventory;
     private int specialSkillCooldown;
 
     /**
@@ -28,10 +28,9 @@ public abstract class Player extends Combatant {
      * 
      * @param item The item to use
      */
-    public void useItem(Item item) {
-        // TODO: Implementation required by someone else - item usage mechanics
+    public void useItem(Object item) {
         if (inventory.contains(item)) {
-            item.use(this);
+            invokeItemUse(item);
             inventory.remove(item);
         }
     }
@@ -42,11 +41,9 @@ public abstract class Player extends Combatant {
      * TODO: Implementation required by someone else - special skill logic.
      */
     public void useSpecialSkill() {
-        // TODO: Implementation required by someone else - special skill mechanics
         if (specialSkillCooldown <= 0) {
-            // Override in subclasses to define actual special skill behavior
             System.out.println(getName() + " uses a special skill!");
-            specialSkillCooldown = 3; // Example cooldown of 3 turns
+            specialSkillCooldown = GameConstants.SPECIAL_SKILL_COOLDOWN;
         } else {
             System.out.println(getName() + "'s special skill is on cooldown for " + specialSkillCooldown + " more turns.");
         }
@@ -71,12 +68,13 @@ public abstract class Player extends Combatant {
 
     // Getters and Setters for all attributes
 
-    public List<Item> getInventory() {
+    @SuppressWarnings("rawtypes")
+    public List getInventory() {
         return new ArrayList<>(inventory);
     }
 
-    public void setInventory(List<Item> inventory) {
-        this.inventory = new ArrayList<>(inventory);
+    public void setInventory(List<?> inventory) {
+        this.inventory = new ArrayList<>(inventory == null ? new ArrayList<>() : inventory);
     }
 
     /**
@@ -84,7 +82,7 @@ public abstract class Player extends Combatant {
      * 
      * @param item The item to add
      */
-    public void addItem(Item item) {
+    public void addItem(Object item) {
         if (item != null) {
             inventory.add(item);
         }
@@ -95,7 +93,7 @@ public abstract class Player extends Combatant {
      * 
      * @param item The item to remove
      */
-    public void removeItem(Item item) {
+    public void removeItem(Object item) {
         inventory.remove(item);
     }
 
@@ -124,5 +122,16 @@ public abstract class Player extends Combatant {
      */
     public boolean isSpecialSkillAvailable() {
         return specialSkillCooldown <= 0;
+    }
+
+    private void invokeItemUse(Object item) {
+        try {
+            java.lang.reflect.Method method = item.getClass().getMethod("use", Combatant.class);
+            method.invoke(item, this);
+        } catch (NoSuchMethodException e) {
+            // Ignore unknown item types until the rest of the codebase is wired.
+        } catch (ReflectiveOperationException e) {
+            throw new IllegalStateException("Failed to use item", e);
+        }
     }
 }
