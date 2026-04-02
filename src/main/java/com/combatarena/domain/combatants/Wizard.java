@@ -1,5 +1,8 @@
 package com.combatarena.domain.combatants;
 
+import com.combatarena.util.GameConstants;
+import java.util.Collections;
+import java.util.List;
 
 public class Wizard extends Player {
     private int attackBonus;
@@ -20,17 +23,34 @@ public class Wizard extends Player {
      * @param target The combatant to blast with arcane magic
      */
     public void arcaneBlast(Combatant target) {
-        if (target != null && target.isAlive()) {
-            // TODO: Implementation required by someone else - arcane effect mechanics
-            int baseDamage = getAttack() + attackBonus; // Use attack bonus for increased damage
-            target.takeDamage(baseDamage);
-            System.out.println(getName() + " casts Arcane Blast on " + target.getName() + 
-                             " for " + baseDamage + " damage! (with +" + attackBonus + " bonus)");
-            
-            // Apply arcane buff effect
-            // StatusEffect arcaneBuffEffect = new ArcaneBlastBuff(); // TODO: Implement by someone else
-            // target.applyStatusEffect(arcaneBuffEffect);
+        arcaneBlast(target, target == null ? Collections.emptyList() : Collections.singletonList(target));
+    }
+
+    /**
+     * Arcane Blast hits all active enemies in the provided target list.
+     * Each enemy eliminated by this blast grants a permanent +ATK bonus.
+     */
+    public void arcaneBlast(Combatant target, List<Combatant> allTargets) {
+        if (allTargets == null || allTargets.isEmpty()) {
+            return;
         }
+
+        for (Combatant enemy : allTargets) {
+            if (enemy == null || !enemy.isAlive()) {
+                continue;
+            }
+
+            int damage = Math.max(0, getAttack() - enemy.getDefense());
+            enemy.takeDamage(damage);
+            System.out.println(getName() + " casts Arcane Blast on " + enemy.getName()
+                    + " for " + damage + " damage!");
+
+            if (!enemy.isAlive()) {
+                arcaneBlastBonus(GameConstants.ARCANE_BLAST_ATK_BONUS);
+            }
+        }
+
+        setSpecialSkillCooldown(GameConstants.SPECIAL_SKILL_COOLDOWN);
     }
 
     /**
@@ -40,14 +60,24 @@ public class Wizard extends Player {
      * @param amount The amount to increase attack bonus by
      */
     public void addAttackBonus(int amount) {
-        this.attackBonus += Math.max(0, amount);
-        System.out.println(getName() + " gains +" + amount + " attack bonus (total: " + attackBonus + ")");
+        arcaneBlastBonus(amount);
+    }
+
+    /**
+     * Increases attack for the rest of the level when Arcane Blast secures a kill.
+     */
+    public void arcaneBlastBonus(int amount) {
+        int gain = Math.max(0, amount);
+        this.attackBonus += gain;
+        setAttack(getAttack() + gain);
+        System.out.println(getName() + " gains +" + gain + " attack (Arcane Bonus total: " + attackBonus + ")");
     }
 
     /**
      * Resets the attack bonus to 0.
      */
     public void resetAttackBonus() {
+        setAttack(Math.max(0, getAttack() - attackBonus));
         this.attackBonus = 0;
     }
 
@@ -66,7 +96,10 @@ public class Wizard extends Player {
      * @param bonus The bonus value to set
      */
     public void setAttackBonus(int bonus) {
-        this.attackBonus = Math.max(0, bonus);
+        int clamped = Math.max(0, bonus);
+        int delta = clamped - this.attackBonus;
+        setAttack(Math.max(0, getAttack() + delta));
+        this.attackBonus = clamped;
     }
 
     /**
@@ -76,9 +109,8 @@ public class Wizard extends Player {
      */
     @Override
     public void performTurn() {
-        // TODO: Implementation required by someone else - wizard turn strategy
         decrementCooldown();
-        System.out.println(getName() + " channels magical energy! (Attack Bonus: " + attackBonus + ")");
+        System.out.println(getName() + " channels magical energy. (Arcane Bonus: " + attackBonus + ")");
     }
 
     /**

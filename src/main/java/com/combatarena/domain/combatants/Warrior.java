@@ -1,9 +1,8 @@
 package com.combatarena.domain.combatants;
 
+import com.combatarena.util.GameConstants;
 
 public class Warrior extends Player {
-    private static final int INITIAL_COOLDOWN = 0;
-
     /**
      * Constructor to initialize a Warrior with default attributes.
      */
@@ -20,15 +19,12 @@ public class Warrior extends Player {
      */
     public void shieldBash(Combatant target) {
         if (target != null && target.isAlive()) {
-            // TODO: Implementation required by someone else - stun effect mechanics
-            int baseDamage = getAttack() + 5; // Slightly increased damage for special ability
-            target.takeDamage(baseDamage);
-            System.out.println(getName() + " uses Shield Bash on " + target.getName() + 
-                             " for " + baseDamage + " damage!");
-            
-            // Apply stun effect
-            // StatusEffect stunEffect = new StunEffect(); // TODO: Implement by someone else
-            // target.applyStatusEffect(stunEffect);
+            int damage = Math.max(0, getAttack() - target.getDefense());
+            target.takeDamage(damage);
+            applyStun(target);
+            setSpecialSkillCooldown(GameConstants.SPECIAL_SKILL_COOLDOWN);
+            System.out.println(getName() + " uses Shield Bash on " + target.getName()
+                    + " for " + damage + " damage!");
         }
     }
 
@@ -39,9 +35,8 @@ public class Warrior extends Player {
      */
     @Override
     public void performTurn() {
-        // TODO: Implementation required by someone else - warrior turn strategy
         decrementCooldown();
-        System.out.println(getName() + " prepares for combat!");
+        System.out.println(getName() + " braces for close combat.");
     }
 
     /**
@@ -50,5 +45,36 @@ public class Warrior extends Player {
     @Override
     public String toString() {
         return "Warrior: " + super.toString();
+    }
+
+    private void applyStun(Combatant target) {
+        Object stunEffect = createEffect(
+                "com.combatarena.domain.statuseffects.StunEffect",
+                GameConstants.STUN_DURATION + 1
+        );
+
+        if (stunEffect == null) {
+            stunEffect = createEffect(
+                    "main.java.com.combatarena.domain.statuseffects.StunEffect",
+                    GameConstants.STUN_DURATION + 1
+            );
+        }
+
+        if (stunEffect != null) {
+            target.applyStatusEffect(stunEffect);
+        }
+    }
+
+    private Object createEffect(String className, int duration) {
+        try {
+            Class<?> clazz = Class.forName(className);
+            try {
+                return clazz.getConstructor(int.class).newInstance(duration);
+            } catch (NoSuchMethodException ex) {
+                return clazz.getConstructor().newInstance();
+            }
+        } catch (ReflectiveOperationException e) {
+            return null;
+        }
     }
 }
