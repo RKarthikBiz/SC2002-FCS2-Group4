@@ -31,10 +31,9 @@ public abstract class Enemy extends Combatant {
      */
     @Override
     public void performTurn() {
-        // TODO: Implementation required by someone else - enemy turn mechanics
         Action action = decideAction();
         if (action != null) {
-            System.out.println(getName() + " performs action: " + action.getName());
+            System.out.println(getName() + " prepares " + action.getClass().getSimpleName() + ".");
         }
     }
 }

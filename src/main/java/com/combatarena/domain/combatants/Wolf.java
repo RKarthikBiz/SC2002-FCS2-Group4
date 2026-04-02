@@ -1,6 +1,7 @@
 package com.combatarena.domain.combatants;
 
 import com.combatarena.domain.actions.Action;
+import com.combatarena.domain.actions.BasicAttack;
 
 
 public class Wolf extends Enemy {
@@ -21,11 +22,7 @@ public class Wolf extends Enemy {
      */
     @Override
     public Action decideAction() {
-        // TODO: Implementation required by someone else - action instantiation
-        // Return a BasicAttack action or similar
-        // For now, return null as placeholder
-        System.out.println(getName() + " snarls and prepares to attack!");
-        return null; // TODO: Return new BasicAttack(this, target);
+        return new BasicAttack();
     }
 
     /**
@@ -34,7 +31,7 @@ public class Wolf extends Enemy {
      */
     @Override
     public void performTurn() {
-        super.performTurn();
+        System.out.println(getName() + " snaps aggressively.");
     }
 
     /**
