@@ -1,6 +1,6 @@
-package main.java.com.combatarena.domain.level;
+package com.combatarena.domain.level;
 
-import main.java.com.combatarena.domain.combatants.Enemy;
+import com.combatarena.domain.combatants.Enemy;
 import java.util.ArrayList;
 import java.util.List;
 

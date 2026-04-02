@@ -1,8 +1,9 @@
-package main.java.com.combatarena.domain.level;
+package com.combatarena.domain.level;
 
-import main.java.com.combatarena.domain.combatants.Goblin;
-import main.java.com.combatarena.domain.combatants.Wolf;
-import main.java.com.combatarena.domain.combatants.Enemy;
+import com.combatarena.domain.combatants.Goblin;
+import com.combatarena.domain.combatants.Wolf;
+import com.combatarena.domain.combatants.Enemy;
+import com.combatarena.util.GameConstants;
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,6 +23,10 @@ public class LevelFactory {
 
     /**
      * Creates and returns a Level based on the requested difficulty.
+     *
+     * @param difficulty "Easy", "Medium", or "Hard" (case-insensitive)
+     * @return a fully configured Level instance
+     * @throws IllegalArgumentException if an unrecognised difficulty is passed
      */
     public static Level createLevel(String difficulty) {
         switch (difficulty.toLowerCase()) {
@@ -39,6 +44,32 @@ public class LevelFactory {
     }
 
     // -------------------------------------------------------------------------
+    // Private helper: creates a fresh Goblin using stats from GameConstants
+    // -------------------------------------------------------------------------
+    private static Goblin newGoblin() {
+        return new Goblin(
+                "Goblin",
+                GameConstants.GOBLIN_HP,
+                GameConstants.GOBLIN_ATK,
+                GameConstants.GOBLIN_DEF,
+                GameConstants.GOBLIN_SPD
+        );
+    }
+
+    // -------------------------------------------------------------------------
+    // Private helper: creates a fresh Wolf using stats from GameConstants
+    // -------------------------------------------------------------------------
+    private static Wolf newWolf() {
+        return new Wolf(
+                "Wolf",
+                GameConstants.WOLF_HP,
+                GameConstants.WOLF_ATK,
+                GameConstants.WOLF_DEF,
+                GameConstants.WOLF_SPD
+        );
+    }
+
+    // -------------------------------------------------------------------------
     // Private level builders
     // -------------------------------------------------------------------------
 
@@ -47,9 +78,9 @@ public class LevelFactory {
      */
     private static Level createEasyLevel() {
         List<Enemy> initial = Arrays.asList(
-                new Goblin(),
-                new Goblin(),
-                new Goblin()
+                newGoblin(),
+                newGoblin(),
+                newGoblin()
         );
         List<Enemy> backup = Collections.emptyList();
         return new Level("Easy", initial, backup);
@@ -60,12 +91,12 @@ public class LevelFactory {
      */
     private static Level createMediumLevel() {
         List<Enemy> initial = Arrays.asList(
-                new Goblin(),
-                new Wolf()
+                newGoblin(),
+                newWolf()
         );
         List<Enemy> backup = Arrays.asList(
-                new Wolf(),
-                new Wolf()
+                newWolf(),
+                newWolf()
         );
         return new Level("Medium", initial, backup);
     }
@@ -75,13 +106,13 @@ public class LevelFactory {
      */
     private static Level createHardLevel() {
         List<Enemy> initial = Arrays.asList(
-                new Goblin(),
-                new Goblin()
+                newGoblin(),
+                newGoblin()
         );
         List<Enemy> backup = Arrays.asList(
-                new Goblin(),
-                new Wolf(),
-                new Wolf()
+                newGoblin(),
+                newWolf(),
+                newWolf()
         );
         return new Level("Hard", initial, backup);
     }
