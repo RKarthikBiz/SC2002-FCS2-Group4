@@ -1,6 +1,6 @@
-package main.java.com.combatarena.control;
+package com.combatarena.control;
 
-import main.java.com.combatarena.domain.combatants.Combatant;
+import com.combatarena.domain.combatants.Combatant;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;

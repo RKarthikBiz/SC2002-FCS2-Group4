@@ -1,12 +1,12 @@
-package main.java.com.combatarena.control;
+package com.combatarena.control;
 
-import main.java.com.combatarena.boundary.GameCLI;
-import main.java.com.combatarena.domain.actions.Action;
-import main.java.com.combatarena.domain.combatants.Combatant;
-import main.java.com.combatarena.domain.combatants.Enemy;
-import main.java.com.combatarena.domain.combatants.Player;
-import main.java.com.combatarena.domain.effects.StatusEffect;
-import main.java.com.combatarena.domain.level.Level;
+import com.combatarena.boundary.GameCLI;
+import com.combatarena.domain.actions.Action;
+import com.combatarena.domain.combatants.Combatant;
+import com.combatarena.domain.combatants.Enemy;
+import com.combatarena.domain.combatants.Player;
+import com.combatarena.domain.effects.StatusEffect;
+import com.combatarena.domain.level.Level;
 import java.util.ArrayList;
 import java.util.List;
 
