@@ -1,4 +1,4 @@
-package main.java.com.combatarena.domain.statuseffects;
+package com.combatarena.domain.statuseffects;
 
 import com.combatarena.domain.combatants.Combatant;
 

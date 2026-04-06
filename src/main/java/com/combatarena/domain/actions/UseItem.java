@@ -16,7 +16,7 @@ import com.combatarena.domain.items.Item;
  */
 public class UseItem implements Action {
 
-    private final Item   item;
+    private final Item item;
     private final Player player; // held to remove the item from inventory after use
 
     /**

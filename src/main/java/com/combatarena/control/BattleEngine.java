@@ -6,7 +6,11 @@ import com.combatarena.domain.combatants.Combatant;
 import com.combatarena.domain.combatants.Enemy;
 import com.combatarena.domain.combatants.Player;
 import com.combatarena.domain.effects.StatusEffect;
+import com.combatarena.domain.items.Item;
 import com.combatarena.domain.level.Level;
+import com.combatarena.util.BattleLogger;
+import com.combatarena.util.GameConstants;
+import com.combatarena.util.LootTable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,27 +21,33 @@ import java.util.List;
  *   - Manage the turn cycle (order, tick effects, process actions).
  *   - Check win/loss conditions.
  *   - Trigger backup enemy spawning.
+ *   - Track combo counter and apply combo ATK bonus.
+ *   - Check loot drops after enemy kills.
  *   - Delegate display to GameCLI and turn ordering to TurnOrderStrategy (DIP).
  *
  * BattleEngine depends on the TurnOrderStrategy interface, not on
- * SpeedBasedTurnOrder directly
+ * SpeedBasedTurnOrder directly (DIP).
  */
 public class BattleEngine {
 
     // -------------------------------------------------------------------------
-    // Fields (match UML)
+    // Fields
     // -------------------------------------------------------------------------
 
     private final TurnOrderStrategy turnStrategy;
     private Level currentLevel;
     private final List<Enemy> activeEnemies;
     private final Player player;
-
-    /** Reference to the boundary layer for display calls. */
     private final GameCLI gameCLI;
 
     /** Tracks whether the backup wave has already been spawned this level. */
     private boolean backupSpawned;
+
+    /** Counts consecutive hits the player has landed without taking damage. */
+    private int comboCounter;
+
+    /** Logs every action taken during the battle for end-of-battle summary. */
+    private final BattleLogger battleLogger;
 
     // -------------------------------------------------------------------------
     // Constructor
@@ -51,6 +61,8 @@ public class BattleEngine {
         this.gameCLI       = gameCLI;
         this.activeEnemies = new ArrayList<>(level.getInitialEnemies());
         this.backupSpawned = false;
+        this.comboCounter  = 0;
+        this.battleLogger  = new BattleLogger();
     }
 
     // -------------------------------------------------------------------------
@@ -58,40 +70,47 @@ public class BattleEngine {
     // -------------------------------------------------------------------------
 
     /**
-     * Runs the full battle until the player wins or loses.
+     * Runs the full battle until the player wins, loses, or flees.
      * Called by GameCLI after setup.
      */
     public void runBattle() {
         gameCLI.displayBattleState();
 
         while (!checkGameOver()) {
-            // Build the participant list for this round
+            battleLogger.incrementTurn();
+
             List<Combatant> participants = buildParticipantList();
+            List<Combatant> turnOrder   = turnStrategy.determineTurnOrder(participants);
 
-            // Determine turn order via the injected strategy
-            List<Combatant> turnOrder = turnStrategy.determineTurnOrder(participants);
-
-            // Process each combatant's turn
             for (Combatant combatant : turnOrder) {
                 if (!combatant.isAlive()) {
-                    continue; // May have died mid-round
+                    continue;
                 }
-                processTurn(combatant);
 
-                // After every action, check game-over / backup conditions
+                boolean fled = processTurn(combatant);
+
+                // Player chose to flee successfully — end battle immediately
+                if (fled) {
+                    battleLogger.record("Turn " + battleLogger.getTurnNumber()
+                            + ": " + player.getName() + " fled the battle!");
+                    battleLogger.printLog();
+                    System.out.println("\n" + player.getName() + " escaped safely!");
+                    return;
+                }
+
                 if (checkGameOver()) {
                     break;
                 }
                 spawnBackups();
             }
 
-            // Tick status effects at end of round for all participants
             tickAllStatusEffects(participants);
-
             gameCLI.displayBattleState();
         }
 
-        // Display final outcome
+        // Print full battle log before outcome
+        battleLogger.printLog();
+
         if (player.isAlive()) {
             gameCLI.displayVictory();
         } else {
@@ -105,39 +124,136 @@ public class BattleEngine {
 
     /**
      * Processes a single combatant's turn.
-     * Skips the turn if the combatant is stunned or otherwise unable to act.
      */
-    public void processTurn(Combatant combatant) {
-        // Apply start-of-turn status effect hooks (stun check happens here)
-        for (StatusEffect effect : combatant.getStatusEffects()) {
+    public boolean processTurn(Combatant combatant) {
+        // Tick status effects at start of this combatant's turn
+        for (StatusEffect effect : new ArrayList<>(combatant.getStatusEffects())) {
             effect.tick();
         }
-        combatant.applyStatusEffects(); // removes expired effects
+        combatant.applyStatusEffects();
 
-        // Stunned combatants cannot act — check after tick so stun counts down
+        // Stunned combatants skip their turn
         if (isStunned(combatant)) {
-            System.out.println(combatant.getName() + " is stunned and skips their turn!");
-            return;
+            String entry = "Turn " + battleLogger.getTurnNumber()
+                    + ": " + combatant.getName() + " is stunned and skips their turn!";
+            System.out.println(entry);
+            battleLogger.record(entry);
+            return false;
         }
 
-        // Decide action
-        Action action;
+        // ── Player turn ──────────────────────────────────────────────────────
         if (combatant instanceof Player) {
-            // Human player: delegate action selection to GameCLI
-            action = gameCLI.getPlayerAction();
+            Action action     = gameCLI.getPlayerAction();
+            Combatant target  = resolveTarget(combatant);
+            if (target == null) return false;
+
+            // Snapshot target HP before action to detect damage dealt and kills
+            int targetHpBefore = target.getHp();
+
+            action.execute(combatant, target);
+
+            // Log the action
+            String actionName = action.getClass().getSimpleName();
+            battleLogger.record("Turn " + battleLogger.getTurnNumber()
+                    + ": " + combatant.getName() + " used " + actionName
+                    + " on " + target.getName());
+
+            // Check if Flee was successful
+            if (action instanceof com.combatarena.domain.actions.Flee) {
+                com.combatarena.domain.actions.Flee fleeAction =
+                        (com.combatarena.domain.actions.Flee) action;
+                if (fleeAction.wasSuccessful()) {
+                    return true;
+                }
+            }
+
+            // Combo tracking — did the player deal damage this turn?
+            boolean dealtDamage = target.getHp() < targetHpBefore;
+            if (dealtDamage) {
+                incrementCombo();
+            }
+
+            // Loot drop check — did the player kill the target?
+            if (!target.isAlive()) {
+                checkLootDrop((Enemy) target);
+            }
+
+        // ── Enemy turn ───────────────────────────────────────────────────────
         } else {
-            // AI enemy: always returns BasicAttack
-            action = ((Enemy) combatant).decideAction();
+            Enemy enemy       = (Enemy) combatant;
+            Action action     = enemy.decideAction();
+            Combatant target  = resolveTarget(combatant);
+            if (target == null) return false;
+
+            int playerHpBefore = player.getHp();
+
+            action.execute(combatant, target);
+
+            battleLogger.record("Turn " + battleLogger.getTurnNumber()
+                    + ": " + combatant.getName() + " used BasicAttack"
+                    + " on " + target.getName());
+
+            // If player took damage, break the combo
+            if (player.getHp() < playerHpBefore) {
+                resetCombo();
+            }
         }
 
-        // Determine target
-        Combatant target = resolveTarget(combatant);
-        if (target == null) {
-            return; // No valid targets (should not happen during a normal round)
-        }
+        return false;
+    }
 
-        // Execute the chosen action
-        action.execute(combatant, target);
+    // -------------------------------------------------------------------------
+    // Combo counter
+    // -------------------------------------------------------------------------
+
+    /**
+     * Increments the combo counter. At every COMBO_BONUS_THRESHOLD hits,
+     * grants the player a temporary ATK bonus for that turn.
+     */
+    public void incrementCombo() {
+        comboCounter++;
+        System.out.println("  [COMBO x" + comboCounter + "]");
+
+        if (comboCounter % GameConstants.COMBO_BONUS_THRESHOLD == 0) {
+            int bonus = GameConstants.COMBO_ATK_BONUS;
+            player.setAttack(player.getAttack() + bonus);
+            String msg = "  ★ COMBO BONUS! +" + bonus + " ATK this turn for "
+                    + player.getName() + "!";
+            System.out.println(msg);
+            battleLogger.record(msg);
+        }
+    }
+
+    /**
+     * Resets the combo counter when the player takes damage.
+     */
+    public void resetCombo() {
+        if (comboCounter > 0) {
+            System.out.println("  [Combo broken! Was x" + comboCounter + "]");
+            comboCounter = 0;
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // Loot drop
+    // -------------------------------------------------------------------------
+
+    /**
+     * Rolls for a loot drop from a defeated enemy.
+     * If successful, the item is added directly to the player's inventory.
+     */
+    public void checkLootDrop(Enemy enemy) {
+        if (LootTable.shouldDrop()) {
+            Item dropped = LootTable.rollDrop();
+            if (dropped != null) {
+                player.addItem(dropped);
+                String msg = "  ★ LOOT! " + enemy.getName() + " dropped a "
+                        + dropped.getClass().getSimpleName()
+                        + "! Added to your inventory.";
+                System.out.println(msg);
+                battleLogger.record(msg);
+            }
+        }
     }
 
     // -------------------------------------------------------------------------
@@ -154,28 +270,22 @@ public class BattleEngine {
         }
         if (allEnemiesDead()) {
             if (!backupSpawned && currentLevel.hasBackup()) {
-                return false; // Backup will spawn — not over yet
+                return false;
             }
             return true;
         }
         return false;
     }
 
-    /**
-     * Checks whether all active enemies are dead.
-     */
     private boolean allEnemiesDead() {
         for (Enemy e : activeEnemies) {
-            if (e.isAlive()) {
-                return false;
-            }
+            if (e.isAlive()) return false;
         }
         return true;
     }
 
     /**
-     * Spawns the backup wave if the initial wave is wiped and backup
-     * has not yet been spawned.
+     * Spawns the backup wave when the initial wave is fully wiped.
      */
     public void spawnBackups() {
         if (!backupSpawned && allEnemiesDead() && currentLevel.hasBackup()) {
@@ -185,7 +295,9 @@ public class BattleEngine {
             currentLevel.markInitialCleared();
             System.out.println("=== Backup enemies have arrived! ===");
             for (Enemy e : backups) {
-                System.out.println("  + " + e.getName() + " joins the fight!");
+                String msg = "  + " + e.getName() + " joins the fight!";
+                System.out.println(msg);
+                battleLogger.record(msg);
             }
         }
     }
@@ -194,9 +306,6 @@ public class BattleEngine {
     // Utility helpers
     // -------------------------------------------------------------------------
 
-    /**
-     * Builds the full participant list: player + all living active enemies.
-     */
     private List<Combatant> buildParticipantList() {
         List<Combatant> list = new ArrayList<>();
         list.add(player);
@@ -204,10 +313,6 @@ public class BattleEngine {
         return list;
     }
 
-    /**
-     * Ticks status effects for all combatants at end of round and removes
-     * expired effects.
-     */
     private void tickAllStatusEffects(List<Combatant> participants) {
         for (Combatant c : participants) {
             if (c.isAlive()) {
@@ -216,32 +321,19 @@ public class BattleEngine {
         }
     }
 
-    /**
-     * Determines the appropriate target for a combatant's action.
-     * Players target the first living enemy; enemies target the player.
-     */
     private Combatant resolveTarget(Combatant combatant) {
         if (combatant instanceof Player) {
-            // Target the first alive enemy
             for (Enemy e : activeEnemies) {
-                if (e.isAlive()) {
-                    return e;
-                }
+                if (e.isAlive()) return e;
             }
             return null;
         } else {
-            // Enemy targets the player
             return player.isAlive() ? player : null;
         }
     }
 
-    /**
-     * Checks if the given combatant has an active StunEffect.
-     */
     private boolean isStunned(Combatant combatant) {
         for (StatusEffect effect : combatant.getStatusEffects()) {
-            // Using class name check to avoid cross-package import of StunEffect here;
-            // alternatively, StatusEffect could expose an isStun() method.
             if (effect.getClass().getSimpleName().equals("StunEffect")) {
                 return true;
             }
@@ -250,18 +342,12 @@ public class BattleEngine {
     }
 
     // -------------------------------------------------------------------------
-    // Getters (used by GameCLI for display)
+    // Getters
     // -------------------------------------------------------------------------
 
-    public Player getPlayer() {
-        return player;
-    }
-
-    public List<Enemy> getActiveEnemies() {
-        return new ArrayList<>(activeEnemies);
-    }
-
-    public Level getCurrentLevel() {
-        return currentLevel;
-    }
+    public Player getPlayer()             { return player; }
+    public List<Enemy> getActiveEnemies() { return new ArrayList<>(activeEnemies); }
+    public Level getCurrentLevel()        { return currentLevel; }
+    public int getComboCounter()          { return comboCounter; }
+    public BattleLogger getBattleLogger() { return battleLogger; }
 }
