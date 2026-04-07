@@ -1,3 +1,5 @@
+package com.combatarena.domain.items;
+
 import com.combatarena.domain.items.Item;
 import com.combatarena.domain.combatants.Combatant;
 import com.combatarena.domain.statuseffects.SmokeBombEffect;

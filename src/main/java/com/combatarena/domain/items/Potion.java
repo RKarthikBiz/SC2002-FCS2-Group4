@@ -1,3 +1,4 @@
+package com.combatarena.domain.items;
 import com.combatarena.domain.combatants.Combatant;
 import com.combatarena.util.GameConstants;
 

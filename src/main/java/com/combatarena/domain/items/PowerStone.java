@@ -1,3 +1,5 @@
+package com.combatarena.domain.items;
+
 import java.util.List;
 import com.combatarena.domain.items.Item;
 import com.combatarena.domain.combatants.Combatant;

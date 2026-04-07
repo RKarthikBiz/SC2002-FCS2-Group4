@@ -5,7 +5,7 @@ import com.combatarena.domain.actions.Action;
 import com.combatarena.domain.combatants.Combatant;
 import com.combatarena.domain.combatants.Enemy;
 import com.combatarena.domain.combatants.Player;
-import com.combatarena.domain.effects.StatusEffect;
+import com.combatarena.domain.statuseffects.StatusEffect;
 import com.combatarena.domain.items.Item;
 import com.combatarena.domain.level.Level;
 import com.combatarena.util.BattleLogger;
