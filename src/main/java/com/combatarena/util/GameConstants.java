@@ -19,17 +19,17 @@ public final class GameConstants {
     // Warrior base stats                              (return type: int)
     // =========================================================================
 
-    public static final int WARRIOR_HP  = 200;
-    public static final int WARRIOR_ATK = 35;
+    public static final int WARRIOR_HP  = 260;
+    public static final int WARRIOR_ATK = 40;
     public static final int WARRIOR_DEF = 20;
-    public static final int WARRIOR_SPD = 15;
+    public static final int WARRIOR_SPD = 30;
 
     // =========================================================================
     // Wizard base stats                               (return type: int)
     // =========================================================================
 
-    public static final int WIZARD_HP  = 150;
-    public static final int WIZARD_ATK = 45;
+    public static final int WIZARD_HP  = 200;
+    public static final int WIZARD_ATK = 50;
     public static final int WIZARD_DEF = 10;
     public static final int WIZARD_SPD = 20;
 
@@ -37,19 +37,19 @@ public final class GameConstants {
     // Goblin base stats                               (return type: int)
     // =========================================================================
 
-    public static final int GOBLIN_HP  = 80;
-    public static final int GOBLIN_ATK = 20;
-    public static final int GOBLIN_DEF = 5;
+    public static final int GOBLIN_HP  = 55;
+    public static final int GOBLIN_ATK = 35;
+    public static final int GOBLIN_DEF = 15;
     public static final int GOBLIN_SPD = 25;
 
     // =========================================================================
     // Wolf base stats                                 (return type: int)
     // =========================================================================
 
-    public static final int WOLF_HP  = 100;
-    public static final int WOLF_ATK = 30;
-    public static final int WOLF_DEF = 8;
-    public static final int WOLF_SPD = 30;
+    public static final int WOLF_HP  = 40;
+    public static final int WOLF_ATK = 45;
+    public static final int WOLF_DEF = 5;
+    public static final int WOLF_SPD = 35;
 
     // =========================================================================
     // Skill / action tuning                          (return type: int)
