@@ -170,7 +170,7 @@ public class SpecialSkill implements Action {
      * Default special skill: deals attack damage with no defense reduction.
      */
     private void executeDefaultSkill(Combatant attacker, Combatant target) {
-        int damage = Math.max(0, attacker.getAttack() - target.getDefense());
+        int damage = attacker.getAttack();
         System.out.println(attacker.getName() + " uses a Special Skill on "
                 + target.getName() + " for " + damage + " damage!");
         target.takeDamage(damage);

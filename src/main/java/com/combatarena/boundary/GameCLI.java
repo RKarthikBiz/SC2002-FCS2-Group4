@@ -1,17 +1,19 @@
-package gameCLI;
+package com.combatarena.boundary;
 
 import com.combatarena.control.BattleEngine;
 import com.combatarena.domain.actions.Action;
-// Import your concrete action classes here:
-// import com.combatarena.domain.actions.BasicAttack; 
+import com.combatarena.domain.actions.BasicAttack;
+import com.combatarena.domain.actions.SpecialSkill;
+import com.combatarena.domain.actions.UseItem;
 import com.combatarena.domain.combatants.Enemy;
 import com.combatarena.domain.combatants.Player;
+import com.combatarena.domain.items.Item;
 
 import java.util.List;
 import java.util.Scanner;
 
 public class GameCLI {
-    
+
     private BattleEngine battleEngine;
     private Scanner scanner;
 
@@ -20,7 +22,7 @@ public class GameCLI {
     }
 
     /**
-     * Dependency Injection: Links the engine to the CLI so the CLI 
+     * Dependency Injection: Links the engine to the CLI so the CLI
      * can fetch player and enemy stats for display.
      */
     public void setBattleEngine(BattleEngine battleEngine) {
@@ -34,7 +36,7 @@ public class GameCLI {
         System.out.println("=========================================");
         System.out.println("             BATTLE START!               ");
         System.out.println("=========================================");
-        
+
         if (battleEngine != null) {
             battleEngine.runBattle();
         } else {
@@ -47,16 +49,27 @@ public class GameCLI {
      */
     public void displayBattleState() {
         if (battleEngine == null) return;
-        
+
         Player player = battleEngine.getPlayer();
         List<Enemy> enemies = battleEngine.getActiveEnemies();
 
         System.out.println("\n--- CURRENT BATTLE STATE ---");
-        
+
         // Display Player
-        System.out.printf("[PLAYER] %s - HP: %d\n", 
-                player.getName(), player.getHp()); // Assuming getHp() exists
-        
+        System.out.printf("[PLAYER] %s - HP: %d/%d\n",
+                player.getName(), player.getHp(), player.getMaxHp());
+
+        // Display inventory
+        List<Item> inventory = player.getInventory();
+        if (!inventory.isEmpty()) {
+            System.out.print("  Inventory: ");
+            for (int i = 0; i < inventory.size(); i++) {
+                Item item = inventory.get(i);
+                System.out.print((i > 0 ? ", " : "") + item.getClass().getSimpleName());
+            }
+            System.out.println();
+        }
+
         // Display Enemies
         System.out.println("[ENEMIES]");
         for (Enemy e : enemies) {
@@ -73,34 +86,62 @@ public class GameCLI {
      * Prompts the player to choose an action and returns an implementation of the Action interface.
      */
     public Action getPlayerAction() {
+        Player player = battleEngine.getPlayer();
+
         System.out.println("Choose your next action:");
         System.out.println("1. Basic Attack");
-        System.out.println("2. Use Skill (Placeholder)");
-        System.out.println("3. Use Item (Placeholder)");
-        
+        System.out.println("2. Special Skill" + (SpecialSkill.isReady(player) ? " (Ready)" : " (On Cooldown: " + SpecialSkill.getCooldown(player) + ")"));
+        System.out.println("3. Use Item" + (player.getInventory().isEmpty() ? " (No items)" : ""));
+        System.out.println("4. Defend");
+        System.out.println("5. Flee");
+
         while (true) {
-            System.out.print("Enter your choice (1-3): ");
+            System.out.print("Enter your choice (1-5): ");
             String input = scanner.nextLine();
-            
+
             switch (input) {
                 case "1":
-                    // Return your concrete BasicAttack class that implements the Action interface.
-                    // Replace the anonymous class below with: return new BasicAttack();
-                    return new Action() {
-                        @Override
-                        public void execute(com.combatarena.domain.combatants.Combatant attacker, com.combatarena.domain.combatants.Combatant target) {
-                            System.out.println(attacker.getName() + " attacks " + target.getName() + "!");
-                            // attacker does damage to target...
-                        }
-                    };
+                    return new BasicAttack();
                 case "2":
-                    System.out.println("Skills not yet implemented, defaulting to attack.");
-                    return null; // Replace with: return new UseSkillAction();
+                    if (SpecialSkill.isReady(player)) {
+                        List<Enemy> enemies = battleEngine.getActiveEnemies();
+                        java.util.List<com.combatarena.domain.combatants.Combatant> allTargets =
+                                new java.util.ArrayList<>(enemies);
+                        return new SpecialSkill(allTargets);
+                    } else {
+                        System.out.println("Special skill is on cooldown. Try another action.");
+                    }
+                    break;
                 case "3":
-                    System.out.println("Items not yet implemented, defaulting to attack.");
-                    return null; // Replace with: return new UseItemAction();
+                    List<Item> inventory = player.getInventory();
+                    if (inventory.isEmpty()) {
+                        System.out.println("No items in inventory. Try another action.");
+                        break;
+                    }
+                    System.out.println("Select an item to use:");
+                    for (int i = 0; i < inventory.size(); i++) {
+                        System.out.println((i + 1) + ". " + inventory.get(i).getClass().getSimpleName());
+                    }
+                    System.out.print("Enter item number: ");
+                    String itemInput = scanner.nextLine();
+                    try {
+                        int itemIndex = Integer.parseInt(itemInput) - 1;
+                        if (itemIndex >= 0 && itemIndex < inventory.size()) {
+                            Item selectedItem = inventory.get(itemIndex);
+                            return new UseItem(selectedItem);
+                        } else {
+                            System.out.println("Invalid item number.");
+                        }
+                    } catch (NumberFormatException e) {
+                        System.out.println("Invalid input.");
+                    }
+                    break;
+                case "4":
+                    return new com.combatarena.domain.actions.Defend();
+                case "5":
+                    return new com.combatarena.domain.actions.Flee();
                 default:
-                    System.out.println("Invalid choice. Please enter 1, 2, or 3.");
+                    System.out.println("Invalid choice. Please enter a number between 1 and 5.");
             }
         }
     }
@@ -116,7 +157,7 @@ public class GameCLI {
         System.out.println("    DEFEAT... You have fallen in battle. ");
         System.out.println("=========================================");
     }
-    
+
     public void closeScanner() {
         if (scanner != null) {
             scanner.close();

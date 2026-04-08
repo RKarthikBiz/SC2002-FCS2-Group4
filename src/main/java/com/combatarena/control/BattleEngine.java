@@ -6,6 +6,7 @@ import com.combatarena.domain.combatants.Combatant;
 import com.combatarena.domain.combatants.Enemy;
 import com.combatarena.domain.combatants.Player;
 import com.combatarena.domain.statuseffects.StatusEffect;
+import com.combatarena.domain.statuseffects.SmokeBombEffect;
 import com.combatarena.domain.items.Item;
 import com.combatarena.domain.level.Level;
 import com.combatarena.util.BattleLogger;
@@ -46,6 +47,9 @@ public class BattleEngine {
     /** Counts consecutive hits the player has landed without taking damage. */
     private int comboCounter;
 
+    /** Stores the original attack value for combo bonus reversal. */
+    private int playerBaseAttack;
+
     /** Logs every action taken during the battle for end-of-battle summary. */
     private final BattleLogger battleLogger;
 
@@ -62,6 +66,7 @@ public class BattleEngine {
         this.activeEnemies = new ArrayList<>(level.getInitialEnemies());
         this.backupSpawned = false;
         this.comboCounter  = 0;
+        this.playerBaseAttack = player.getAttack();
         this.battleLogger  = new BattleLogger();
     }
 
@@ -101,10 +106,14 @@ public class BattleEngine {
                 if (checkGameOver()) {
                     break;
                 }
-                spawnBackups();
             }
 
+            // Spawn backups at the end of the round (after all combatants have acted)
+            spawnBackups();
+
+            // Tick status effects once per round
             tickAllStatusEffects(participants);
+
             gameCLI.displayBattleState();
         }
 
@@ -126,12 +135,6 @@ public class BattleEngine {
      * Processes a single combatant's turn.
      */
     public boolean processTurn(Combatant combatant) {
-        // Tick status effects at start of this combatant's turn
-        for (StatusEffect effect : new ArrayList<>(combatant.getStatusEffects())) {
-            effect.tick();
-        }
-        combatant.applyStatusEffects();
-
         // Stunned combatants skip their turn
         if (isStunned(combatant)) {
             String entry = "Turn " + battleLogger.getTurnNumber()
@@ -145,7 +148,7 @@ public class BattleEngine {
         if (combatant instanceof Player) {
             Action action     = gameCLI.getPlayerAction();
             Combatant target  = resolveTarget(combatant);
-            if (target == null) return false;
+            if (target == null || action == null) return false;
 
             // Snapshot target HP before action to detect damage dealt and kills
             int targetHpBefore = target.getHp();
@@ -162,7 +165,7 @@ public class BattleEngine {
             if (action instanceof com.combatarena.domain.actions.Flee) {
                 com.combatarena.domain.actions.Flee fleeAction =
                         (com.combatarena.domain.actions.Flee) action;
-                if (fleeAction.wasSuccessful()) {
+                if (fleeAction.hasFled()) {
                     return true;
                 }
             }
@@ -190,7 +193,7 @@ public class BattleEngine {
             action.execute(combatant, target);
 
             battleLogger.record("Turn " + battleLogger.getTurnNumber()
-                    + ": " + combatant.getName() + " used BasicAttack"
+                    + ": " + combatant.getName() + " used " + action.getClass().getSimpleName()
                     + " on " + target.getName());
 
             // If player took damage, break the combo
@@ -226,8 +229,16 @@ public class BattleEngine {
 
     /**
      * Resets the combo counter when the player takes damage.
+     * Also reverses any active combo attack bonus.
      */
     public void resetCombo() {
+        // Reverse any accumulated combo bonuses
+        int currentAttack = player.getAttack();
+        int bonusApplied = currentAttack - playerBaseAttack;
+        if (bonusApplied > 0) {
+            player.setAttack(playerBaseAttack);
+        }
+
         if (comboCounter > 0) {
             System.out.println("  [Combo broken! Was x" + comboCounter + "]");
             comboCounter = 0;
@@ -334,7 +345,7 @@ public class BattleEngine {
 
     private boolean isStunned(Combatant combatant) {
         for (StatusEffect effect : combatant.getStatusEffects()) {
-            if (effect.getClass().getSimpleName().equals("StunEffect")) {
+            if (effect instanceof com.combatarena.domain.statuseffects.StunEffect) {
                 return true;
             }
         }

@@ -1,7 +1,6 @@
 package com.combatarena.domain.actions;
 
 import com.combatarena.domain.combatants.Combatant;
-import com.combatarena.domain.combatants.Player;
 import com.combatarena.domain.items.Item;
 
 /**
@@ -17,17 +16,13 @@ import com.combatarena.domain.items.Item;
 public class UseItem implements Action {
 
     private final Item item;
-    private final Player player; // held to remove the item from inventory after use
 
     /**
-     * @param item   the Item the player has chosen to use (must not be null)
-     * @param player the Player whose inventory will be updated (must not be null)
+     * @param item the Item the player has chosen to use (must not be null)
      */
-    public UseItem(Item item, Player player) {
-        if (item == null)   throw new IllegalArgumentException("Item cannot be null.");
-        if (player == null) throw new IllegalArgumentException("Player cannot be null.");
-        this.item   = item;
-        this.player = player;
+    public UseItem(Item item) {
+        if (item == null) throw new IllegalArgumentException("Item cannot be null.");
+        this.item = item;
     }
 
     @Override
@@ -38,6 +33,11 @@ public class UseItem implements Action {
         item.use(attacker);
 
         // Remove the item from inventory — items are single-use
-        player.getInventory().remove(item);
+        // BattleEngine or Player is responsible for inventory management
+        if (attacker instanceof com.combatarena.domain.combatants.Player) {
+            com.combatarena.domain.combatants.Player player =
+                    (com.combatarena.domain.combatants.Player) attacker;
+            player.removeItem(item);
+        }
     }
 }

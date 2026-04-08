@@ -1,5 +1,6 @@
 package com.combatarena.domain.combatants;
 
+import com.combatarena.domain.statuseffects.StunEffect;
 import com.combatarena.util.GameConstants;
 
 public class Warrior extends Player {
@@ -13,8 +14,7 @@ public class Warrior extends Player {
     /**
      * Warrior's special ability - Shield Bash.
      * Performs a melee attack on a target that also stuns them.
-     * TODO: Implementation required by someone else - stun effect application.
-     * 
+     *
      * @param target The combatant to bash with the shield
      */
     public void shieldBash(Combatant target) {
@@ -30,8 +30,7 @@ public class Warrior extends Player {
 
     /**
      * Performs the Warrior's turn in combat.
-     * Base implementation performs a basic attack.
-     * This can be overridden by game logic to use AI decision-making.
+     * Base implementation prepares for close combat.
      */
     @Override
     public void performTurn() {
@@ -47,34 +46,11 @@ public class Warrior extends Player {
         return "Warrior: " + super.toString();
     }
 
+    /**
+     * Applies a stun effect to the target for STUN_DURATION turns.
+     */
     private void applyStun(Combatant target) {
-        Object stunEffect = createEffect(
-                "com.combatarena.domain.statuseffects.StunEffect",
-                GameConstants.STUN_DURATION + 1
-        );
-
-        if (stunEffect == null) {
-            stunEffect = createEffect(
-                    "main.java.com.combatarena.domain.statuseffects.StunEffect",
-                    GameConstants.STUN_DURATION + 1
-            );
-        }
-
-        if (stunEffect != null) {
-            target.applyStatusEffect(stunEffect);
-        }
-    }
-
-    private Object createEffect(String className, int duration) {
-        try {
-            Class<?> clazz = Class.forName(className);
-            try {
-                return clazz.getConstructor(int.class).newInstance(duration);
-            } catch (NoSuchMethodException ex) {
-                return clazz.getConstructor().newInstance();
-            }
-        } catch (ReflectiveOperationException e) {
-            return null;
-        }
+        StunEffect stun = new StunEffect(GameConstants.STUN_DURATION);
+        target.applyStatusEffect(stun);
     }
 }

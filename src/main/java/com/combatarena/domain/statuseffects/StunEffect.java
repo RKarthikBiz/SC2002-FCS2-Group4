@@ -2,7 +2,7 @@ package com.combatarena.domain.statuseffects;
 
 import com.combatarena.domain.combatants.Combatant;
 
-public abstract class StunEffect implements StatusEffect {
+public class StunEffect implements StatusEffect {
     private int duration;
     private final String name = "Stun";
 
@@ -11,19 +11,17 @@ public abstract class StunEffect implements StatusEffect {
     }
 
     @Override
-    public void applyEffect(Combatant target) {
-        target.setCanMove(false);
+    public void apply(Combatant target) {
         System.out.println(target.getName() + " is stunned and cannot act!");
     }
 
     @Override
-    public void tick(Combatant target) {
+    public void tick() {
         if (duration > 0) duration--;
     }
 
     @Override
-    public void removeEffect(Combatant target) {
-        target.setCanMove(true);
+    public void remove(Combatant target) {
         System.out.println(target.getName() + " is no longer stunned.");
     }
 

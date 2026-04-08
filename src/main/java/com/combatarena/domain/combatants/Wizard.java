@@ -40,7 +40,7 @@ public class Wizard extends Player {
                 continue;
             }
 
-            int damage = Math.max(0, getAttack() - enemy.getDefense());
+            int damage = Math.max(0, getAttack() + attackBonus - enemy.getDefense());
             enemy.takeDamage(damage);
             System.out.println(getName() + " casts Arcane Blast on " + enemy.getName()
                     + " for " + damage + " damage!");

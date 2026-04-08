@@ -2,7 +2,7 @@ package com.combatarena.domain.statuseffects;
 
 import com.combatarena.domain.combatants.Combatant;
 
-public abstract class ArcaneBlastBuff implements StatusEffect {
+public class ArcaneBlastBuff implements StatusEffect {
     private int duration;
     private int attackBoost;
     private final String name = "Arcane Blast Buff";
@@ -13,18 +13,18 @@ public abstract class ArcaneBlastBuff implements StatusEffect {
     }
 
     @Override
-    public void applyEffect(Combatant target) {
+    public void apply(Combatant target) {
         target.setAttack(target.getAttack() + attackBoost);
         System.out.println(target.getName() + " channels arcane energy! Attack increased by " + attackBoost + ".");
     }
 
     @Override
-    public void tick(Combatant target) {
+    public void tick() {
         if (duration > 0) duration--;
     }
 
     @Override
-    public void removeEffect(Combatant target) {
+    public void remove(Combatant target) {
         target.setAttack(target.getAttack() - attackBoost);
         System.out.println(target.getName() + "'s arcane energy fades.");
     }
