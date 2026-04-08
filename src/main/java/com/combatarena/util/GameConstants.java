@@ -1,118 +1,80 @@
 package com.combatarena.util;
 
 /**
- * GameConstants - central store for every magic number used across the game.
+ * GameConstants - single source of truth for every magic number in the game.
  *
- * All fields are public static final so they can be referenced from anywhere
- * without instantiating this class. The constructor is private to prevent
- * accidental instantiation.
+ * All constants are public static final, sourced directly from the UML/XMI.
+ * The class is final with a private constructor to prevent instantiation.
  *
+ * Constant groups (in XMI declaration order):
+ *   Warrior stats  · Wizard stats  · Goblin stats  · Wolf stats
+ *   Skill tuning   · Item tuning   · Critical hits
+ *   Flee           · Combo system  · Loot
  */
 public final class GameConstants {
 
-    // -------------------------------------------------------------------------
-    // Prevent instantiation
-    // -------------------------------------------------------------------------
     private GameConstants() {}
 
     // =========================================================================
-    // Warrior base stats
+    // Warrior base stats                              (return type: int)
     // =========================================================================
 
-    /** Warrior starting / maximum HP. */
-    public static final int WARRIOR_HP  = 260;
-
-    /** Warrior base attack stat. */
-    public static final int WARRIOR_ATK = 40;
-
-    /** Warrior base defense stat. */
+    public static final int WARRIOR_HP  = 200;
+    public static final int WARRIOR_ATK = 35;
     public static final int WARRIOR_DEF = 20;
-
-    /** Warrior base speed stat (determines turn order). */
-    public static final int WARRIOR_SPD = 30;
+    public static final int WARRIOR_SPD = 15;
 
     // =========================================================================
-    // Wizard base stats
+    // Wizard base stats                               (return type: int)
     // =========================================================================
 
-    /** Wizard starting / maximum HP. */
-    public static final int WIZARD_HP  = 200;
-
-    /** Wizard base attack stat. */
-    public static final int WIZARD_ATK = 50;
-
-    /** Wizard base defense stat. */
+    public static final int WIZARD_HP  = 150;
+    public static final int WIZARD_ATK = 45;
     public static final int WIZARD_DEF = 10;
-
-    /** Wizard base speed stat. */
     public static final int WIZARD_SPD = 20;
 
     // =========================================================================
-    // Goblin base stats
+    // Goblin base stats                               (return type: int)
     // =========================================================================
 
-    /** Goblin starting / maximum HP. */
-    public static final int GOBLIN_HP  = 55;
-
-    /** Goblin base attack stat. */
-    public static final int GOBLIN_ATK = 35;
-
-    /** Goblin base defense stat. */
-    public static final int GOBLIN_DEF = 15;
-
-    /** Goblin base speed stat. */
+    public static final int GOBLIN_HP  = 80;
+    public static final int GOBLIN_ATK = 20;
+    public static final int GOBLIN_DEF = 5;
     public static final int GOBLIN_SPD = 25;
 
     // =========================================================================
-    // Wolf base stats
+    // Wolf base stats                                 (return type: int)
     // =========================================================================
 
-    /** Wolf starting / maximum HP. */
-    public static final int WOLF_HP  = 40;
-
-    /** Wolf base attack stat. */
-    public static final int WOLF_ATK = 45;
-
-    /** Wolf base defense stat. */
-    public static final int WOLF_DEF = 5;
-
-    /** Wolf base speed stat. */
-    public static final int WOLF_SPD = 35;
+    public static final int WOLF_HP  = 100;
+    public static final int WOLF_ATK = 30;
+    public static final int WOLF_DEF = 8;
+    public static final int WOLF_SPD = 30;
 
     // =========================================================================
-    // Skill / action tuning
+    // Skill / action tuning                          (return type: int)
     // =========================================================================
 
     /**
-     * Cooldown for the SpecialSkill action in turns, including the turn it
-     * was used. A value of 3 means the skill cannot be reused for the next
-     * 2 turns after it is used.
+     * Cooldown for SpecialSkill in turns, including the turn it was used.
+     * Skill is unavailable for the next (SPECIAL_SKILL_COOLDOWN - 1) turns.
      */
     public static final int SPECIAL_SKILL_COOLDOWN = 3;
 
-    /**
-     * Flat defense bonus granted by the Defend action.
-     * Active for the current round and the next round (DEFEND_DURATION turns).
-     */
+    /** Defense bonus granted by the Defend action (current + next round). */
     public static final int DEFEND_BONUS_DEF = 10;
 
-    /**
-     * Number of turns the Defend bonus lasts (current turn + next turn = 2).
-     */
+    /** Number of turns the Defend bonus lasts (current turn + next turn). */
     public static final int DEFEND_DURATION = 2;
 
-    /**
-     * Number of turns a StunEffect keeps a target stunned.
-     */
+    /** Number of turns a StunEffect keeps its target unable to act. */
     public static final int STUN_DURATION = 1;
 
-    /**
-     * Extra attack damage added to every target hit by Wizard's Arcane Blast.
-     */
+    /** Extra attack damage added to every target hit by Wizard's Arcane Blast. */
     public static final int ARCANE_BLAST_ATK_BONUS = 10;
 
     // =========================================================================
-    // Item tuning
+    // Item tuning                                    (return type: int)
     // =========================================================================
 
     /**
@@ -121,8 +83,40 @@ public final class GameConstants {
      */
     public static final int POTION_HEAL_AMOUNT = 100;
 
-    /**
-     * Number of turns a SmokeBomb blocks incoming enemy damage (current + next).
-     */
+    /** Number of turns a SmokeBomb blocks incoming enemy damage. */
     public static final int SMOKE_BOMB_DURATION = 2;
+
+    // =========================================================================
+    // Critical hit system                            (return type: double)
+    // =========================================================================
+
+    /** Probability (0.0–1.0) that a basic attack is a critical hit. */
+    public static final double CRIT_CHANCE = 0.2;
+
+    /** Damage multiplier applied when a critical hit occurs. */
+    public static final double CRIT_MULTIPLIER = 1.5;
+
+    // =========================================================================
+    // Flee                                           (return type: double)
+    // =========================================================================
+
+    /** Probability (0.0–1.0) that a Flee action succeeds. */
+    public static final double FLEE_CHANCE = 0.5;
+
+    // =========================================================================
+    // Combo system                                   (return type: int)
+    // =========================================================================
+
+    /** Number of consecutive hits required to trigger the combo bonus. */
+    public static final int COMBO_BONUS_THRESHOLD = 3;
+
+    /** Bonus attack damage added when a combo is triggered. */
+    public static final int COMBO_ATK_BONUS = 10;
+
+    // =========================================================================
+    // Loot                                           (return type: double)
+    // =========================================================================
+
+    /** Probability (0.0–1.0) that an enemy drops an item on death. */
+    public static final double LOOT_DROP_CHANCE = 0.4;
 }
