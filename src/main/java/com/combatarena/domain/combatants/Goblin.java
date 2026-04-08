@@ -2,6 +2,7 @@ package com.combatarena.domain.combatants;
 
 import com.combatarena.domain.actions.Action;
 import com.combatarena.domain.actions.BasicAttack;
+import java.util.Arrays;
 
 public class Goblin extends Enemy {
 
@@ -10,6 +11,8 @@ public class Goblin extends Enemy {
      */
     public Goblin(String name, int hp, int attack, int defense, int speed) {
         super(name, hp, attack, defense, speed);
+        setNamePool(Arrays.asList("Chieftain", "Skulker", "Bonepicker", "Nightfang", "Ravager"));
+        assignDynamicName("Goblin");
     }
 
     /**

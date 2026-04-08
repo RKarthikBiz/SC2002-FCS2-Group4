@@ -2,6 +2,7 @@ package com.combatarena.domain.combatants;
 
 import com.combatarena.domain.actions.Action;
 import com.combatarena.domain.actions.BasicAttack;
+import java.util.Arrays;
 
 
 public class Wolf extends Enemy {
@@ -11,6 +12,8 @@ public class Wolf extends Enemy {
      */
     public Wolf(String name, int hp, int attack, int defense, int speed) {
         super(name, hp, attack, defense, speed);
+        setNamePool(Arrays.asList("Rabid", "Dire", "Frostmaw", "Ashfur", "Bloodfang"));
+        assignDynamicName("Wolf");
     }
 
     /**
