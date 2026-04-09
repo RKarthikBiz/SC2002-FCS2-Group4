@@ -14,6 +14,9 @@ import java.util.Scanner;
 
 public class GameCLI {
 
+    private static final String LINE = "============================================================";
+    private static final String SUB_LINE = "------------------------------------------------------------";
+
     private BattleEngine battleEngine;
     private Scanner scanner;
 
@@ -33,9 +36,10 @@ public class GameCLI {
      * Kicks off the game loop inside the BattleEngine.
      */
     public void start() {
-        System.out.println("=========================================");
-        System.out.println("             BATTLE START!               ");
-        System.out.println("=========================================");
+        System.out.println();
+        System.out.println(LINE);
+        System.out.println("                     BATTLE START");
+        System.out.println(LINE);
 
         if (battleEngine != null) {
             battleEngine.runBattle();
@@ -53,33 +57,42 @@ public class GameCLI {
         Player player = battleEngine.getPlayer();
         List<Enemy> enemies = battleEngine.getActiveEnemies();
 
-        System.out.println("\n--- CURRENT BATTLE STATE ---");
+        System.out.println();
+        System.out.println(LINE);
+        System.out.println("                   CURRENT BATTLE STATE");
+        System.out.println(LINE);
 
-        // Display Player
-        System.out.printf("[PLAYER] %s - HP: %d/%d\n",
-                player.getName(), player.getHp(), player.getMaxHp());
+        // Display player
+        System.out.printf("Player : %s%n", player.getName());
+        System.out.printf("HP     : %d/%d%n", player.getHp(), player.getMaxHp());
 
         // Display inventory
         List<Item> inventory = player.getInventory();
         if (!inventory.isEmpty()) {
-            System.out.print("  Inventory: ");
+            System.out.print("Items  : ");
             for (int i = 0; i < inventory.size(); i++) {
                 Item item = inventory.get(i);
                 System.out.print((i > 0 ? ", " : "") + item.getClass().getSimpleName());
             }
             System.out.println();
+        } else {
+            System.out.println("Items  : none");
         }
 
-        // Display Enemies
-        System.out.println("[ENEMIES]");
+        System.out.println(SUB_LINE);
+
+        // Display enemies
+        System.out.println("Enemies:");
+        int index = 1;
         for (Enemy e : enemies) {
             if (e.isAlive()) {
-                System.out.printf("  - %s - HP: %d\n", e.getName(), e.getHp());
+                System.out.printf("  %d) %-22s HP: %d%n", index, e.getName(), e.getHp());
             } else {
-                System.out.printf("  - %s - [DEFEATED]\n", e.getName());
+                System.out.printf("  %d) %-22s DEFEATED%n", index, e.getName());
             }
+            index++;
         }
-        System.out.println("----------------------------\n");
+        System.out.println(LINE);
     }
 
     /**
@@ -88,14 +101,20 @@ public class GameCLI {
     public Action getPlayerAction() {
         Player player = battleEngine.getPlayer();
 
+        System.out.println();
+        System.out.println(SUB_LINE);
         System.out.println("Choose your next action:");
-        System.out.println("1. Basic Attack");
-        System.out.println("2. Special Skill" + (SpecialSkill.isReady(player) ? " (Ready)" : " (On Cooldown: " + SpecialSkill.getCooldown(player) + ")"));
-        System.out.println("3. Use Item" + (player.getInventory().isEmpty() ? " (No items)" : ""));
-        System.out.println("4. Defend");
+        System.out.println("  1) Basic Attack");
+        System.out.println("  2) Special Skill"
+            + (SpecialSkill.isReady(player)
+            ? " [Ready]"
+            : " [Cooldown: " + SpecialSkill.getCooldown(player) + "]"));
+        System.out.println("  3) Use Item" + (player.getInventory().isEmpty() ? " [No items]" : ""));
+        System.out.println("  4) Defend");
+        System.out.println(SUB_LINE);
 
         while (true) {
-            System.out.print("Enter your choice (1-4): ");
+            System.out.print("Select action [1-4]: ");
             String input = scanner.nextLine();
 
             switch (input) {
@@ -117,11 +136,12 @@ public class GameCLI {
                         System.out.println("No items in inventory. Try another action.");
                         break;
                     }
+                    System.out.println();
                     System.out.println("Select an item to use:");
                     for (int i = 0; i < inventory.size(); i++) {
-                        System.out.println((i + 1) + ". " + inventory.get(i).getClass().getSimpleName());
+                        System.out.println("  " + (i + 1) + ") " + inventory.get(i).getClass().getSimpleName());
                     }
-                    System.out.print("Enter item number: ");
+                    System.out.print("Item number: ");
                     String itemInput = scanner.nextLine();
                     try {
                         int itemIndex = Integer.parseInt(itemInput) - 1;
@@ -144,15 +164,17 @@ public class GameCLI {
     }
 
     public void displayVictory() {
-        System.out.println("\n=========================================");
-        System.out.println("    VICTORY! All enemies defeated!       ");
-        System.out.println("=========================================");
+        System.out.println();
+        System.out.println(LINE);
+        System.out.println("           VICTORY! All enemies defeated.");
+        System.out.println(LINE);
     }
 
     public void displayDefeat() {
-        System.out.println("\n=========================================");
-        System.out.println("    DEFEAT... You have fallen in battle. ");
-        System.out.println("=========================================");
+        System.out.println();
+        System.out.println(LINE);
+        System.out.println("            DEFEAT... You have fallen.");
+        System.out.println(LINE);
     }
 
     public void closeScanner() {
