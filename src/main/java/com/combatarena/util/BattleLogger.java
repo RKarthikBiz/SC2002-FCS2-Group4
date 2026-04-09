@@ -54,11 +54,12 @@ public class BattleLogger {
 
     /**
      * Appends a new event entry to the log.
-     * A turn header is written once when the first event of a turn is recorded.
+     * Turn headers are normally written by incrementTurn().
      *
      * @param entry the event description to record
      */
     public void record(String entry) {
+        // Defensive fallback in case record() is called without incrementTurn().
         if (turnNumber != lastLoggedTurn) {
             String turnHeader = "Turn " + turnNumber;
             log.add(turnHeader);
@@ -88,6 +89,10 @@ public class BattleLogger {
      */
     public void incrementTurn() {
         turnNumber++;
+        String turnHeader = "Turn " + turnNumber;
+        log.add(turnHeader);
+        System.out.println(turnHeader);
+        lastLoggedTurn = turnNumber;
     }
 
     /**
