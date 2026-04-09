@@ -1,6 +1,5 @@
 package com.combatarena.domain.items;
 
-import com.combatarena.domain.items.Item;
 import com.combatarena.domain.combatants.Combatant;
 import com.combatarena.domain.statuseffects.SmokeBombEffect;
 import com.combatarena.util.GameConstants;
@@ -19,9 +18,8 @@ public class SmokeBomb implements Item {
 
     @Override
     public void use(Combatant user) {
-        System.out.println(user.getName()
-                + " throws a Smoke Bomb! Enemy attacks will deal 0 damage "
-                + "this turn and the next.");
+        System.out.println("  [ITEM FX ] Smoke Bomb active: enemy attacks deal 0 damage"
+            + " this turn and next turn.");
 
         SmokeBombEffect effect = new SmokeBombEffect(GameConstants.SMOKE_BOMB_DURATION);
         user.addStatusEffect(effect);

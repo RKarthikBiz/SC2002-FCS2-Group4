@@ -137,11 +137,13 @@ public class GameCLI {
                         break;
                     }
                     System.out.println();
+                    System.out.println(SUB_LINE);
                     System.out.println("Select an item to use:");
                     for (int i = 0; i < inventory.size(); i++) {
-                        System.out.println("  " + (i + 1) + ") " + inventory.get(i).getClass().getSimpleName());
+                        System.out.printf("  %d) %-22s%n", (i + 1), inventory.get(i).getClass().getSimpleName());
                     }
-                    System.out.print("Item number: ");
+                    System.out.println(SUB_LINE);
+                    System.out.print("Select item [1-" + inventory.size() + "]: ");
                     String itemInput = scanner.nextLine();
                     try {
                         int itemIndex = Integer.parseInt(itemInput) - 1;
@@ -149,10 +151,10 @@ public class GameCLI {
                             Item selectedItem = inventory.get(itemIndex);
                             return new UseItem(selectedItem);
                         } else {
-                            System.out.println("Invalid item number.");
+                            System.out.println("Invalid item choice. Please try again.");
                         }
                     } catch (NumberFormatException e) {
-                        System.out.println("Invalid input.");
+                        System.out.println("Invalid input. Please enter a number.");
                     }
                     break;
                 case "4":

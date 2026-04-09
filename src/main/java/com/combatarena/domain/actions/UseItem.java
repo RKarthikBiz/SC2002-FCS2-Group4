@@ -27,7 +27,8 @@ public class UseItem implements Action {
 
     @Override
     public void execute(Combatant attacker, Combatant target) {
-        System.out.println(attacker.getName() + " uses " + item.getClass().getSimpleName() + "!");
+        System.out.println("  [ITEM USE] " + attacker.getName() + " used "
+            + item.getClass().getSimpleName() + ".");
 
         // Apply the item's effect to the user (attacker)
         item.use(attacker);

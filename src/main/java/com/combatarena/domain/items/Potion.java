@@ -22,7 +22,7 @@ public class Potion implements Item {
         int newHp = user.getHp();
         int actualHealed = newHp - currentHp;
 
-        System.out.println(user.getName() + " uses a Potion and restores "
-                + actualHealed + " HP! (" + newHp + "/" + maxHp + ")");
+        System.out.println("  [ITEM FX ] Restored " + actualHealed
+            + " HP (" + newHp + "/" + maxHp + ").");
     }
 }

@@ -1,7 +1,7 @@
 package com.combatarena.domain.items;
 
 import java.util.List;
-import com.combatarena.domain.items.Item;
+import java.util.Objects;
 import com.combatarena.domain.combatants.Combatant;
 import com.combatarena.domain.combatants.Warrior;
 import com.combatarena.domain.combatants.Wizard;
@@ -46,8 +46,8 @@ public class PowerStone implements Item {
 
     @Override
     public void use(Combatant user) {
-        System.out.println(user.getName()
-                + " uses a Power Stone — triggering their special skill for free!");
+        System.out.println("  [ITEM FX ] Power Stone: special skill triggers for free"
+            + " (cooldown unchanged).");
 
         // Dispatch to the correct class-specific skill WITHOUT touching cooldown
         if (user instanceof Warrior) {
@@ -61,10 +61,19 @@ public class PowerStone implements Item {
 
         } else {
             // Fallback for any other Combatant subtype
-            int damage = Math.max(0, user.getAttack() - target.getDefense());
-            System.out.println(user.getName() + " strikes " + target.getName()
-                    + " for " + damage + " damage! (Power Stone)");
-            target.takeDamage(damage);
+            Combatant activeTarget = target;
+            if (activeTarget == null && allTargets != null && !allTargets.isEmpty()) {
+                activeTarget = allTargets.get(0);
+            }
+            if (activeTarget == null) {
+                System.out.println("  [ITEM FX ] Power Stone had no valid target.");
+                return;
+            }
+            Combatant resolvedTarget = Objects.requireNonNull(activeTarget);
+            int damage = Math.max(0, user.getAttack() - resolvedTarget.getDefense());
+            System.out.println("  [ITEM FX ] " + user.getName() + " -> " + resolvedTarget.getName()
+                + " | Power Stone strike | " + damage + " dmg");
+            resolvedTarget.takeDamage(damage);
         }
         // Cooldown is intentionally NOT modified here
     }
