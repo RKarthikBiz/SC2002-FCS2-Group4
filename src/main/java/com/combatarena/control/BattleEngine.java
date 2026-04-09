@@ -132,9 +132,10 @@ public class BattleEngine {
 
         // Stunned combatants skip their turn
         if (isStunned(combatant)) {
-            String entry = combatant.getName() + " is stunned and skips their turn!";
+            String entry = "  [STATUS] " + combatant.getName() + " cannot act this turn (stunned).";
             System.out.println(entry);
             battleLogger.record(entry);
+            clearStunEffectsSilently(combatant);
             return;
         }
 
@@ -200,14 +201,14 @@ public class BattleEngine {
      */
     public void incrementCombo() {
         comboCounter++;
-        System.out.println("  [COMBO x" + comboCounter + "]");
+        System.out.println("  [COMBO ] Chain x" + comboCounter);
 
         if (comboCounter % GameConstants.COMBO_BONUS_THRESHOLD == 0) {
             int bonus = GameConstants.COMBO_ATK_BONUS;
             player.setAttack(player.getAttack() + bonus);
             comboBonusApplied += bonus;
-            String msg = "  ★ COMBO BONUS! +" + bonus + " ATK this turn for "
-                    + player.getName() + "!";
+            String msg = "  [COMBO ] Bonus: +" + bonus + " ATK this turn for "
+                    + player.getName() + ".";
             System.out.println(msg);
             battleLogger.record(msg);
         }
@@ -226,7 +227,7 @@ public class BattleEngine {
         }
 
         if (comboCounter > 0) {
-            System.out.println("  [Combo broken! Was x" + comboCounter + "]");
+            System.out.println("  [COMBO ] Broken (was x" + comboCounter + ")");
             comboCounter = 0;
         }
     }
@@ -244,9 +245,9 @@ public class BattleEngine {
             Item dropped = LootTable.rollDrop();
             if (dropped != null) {
                 player.addItem(dropped);
-                String msg = "  ★ LOOT! " + enemy.getName() + " dropped a "
+                String msg = "  [LOOT  ] " + enemy.getName() + " dropped "
                         + dropped.getClass().getSimpleName()
-                        + "! Added to your inventory.";
+                        + ". Added to inventory.";
                 System.out.println(msg);
                 battleLogger.record(msg);
             }
@@ -336,6 +337,21 @@ public class BattleEngine {
             }
         }
         return false;
+    }
+
+    /**
+     * Removes active stun effects without emitting extra status messages.
+     * This keeps stun behavior to a single skipped action and avoids
+     * same-turn "recovered" lines cluttering the combat feed.
+     */
+    private void clearStunEffectsSilently(Combatant combatant) {
+        List<StatusEffect> filtered = new ArrayList<>();
+        for (StatusEffect effect : combatant.getStatusEffects()) {
+            if (!(effect instanceof com.combatarena.domain.statuseffects.StunEffect)) {
+                filtered.add(effect);
+            }
+        }
+        combatant.setStatusEffects(filtered);
     }
 
     // -------------------------------------------------------------------------
