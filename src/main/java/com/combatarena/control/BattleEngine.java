@@ -5,10 +5,9 @@ import com.combatarena.domain.actions.Action;
 import com.combatarena.domain.combatants.Combatant;
 import com.combatarena.domain.combatants.Enemy;
 import com.combatarena.domain.combatants.Player;
-import com.combatarena.domain.statuseffects.StatusEffect;
-import com.combatarena.domain.statuseffects.SmokeBombEffect;
 import com.combatarena.domain.items.Item;
 import com.combatarena.domain.level.Level;
+import com.combatarena.domain.statuseffects.StatusEffect;
 import com.combatarena.util.BattleLogger;
 import com.combatarena.util.GameConstants;
 import com.combatarena.util.LootTable;
@@ -130,13 +129,10 @@ public class BattleEngine {
      * Processes a single combatant's turn.
      */
     public void processTurn(Combatant combatant) {
-        // Tick special skill cooldown at the start of each combatant's turn
-        com.combatarena.domain.actions.SpecialSkill.tick(combatant);
 
         // Stunned combatants skip their turn
         if (isStunned(combatant)) {
-            String entry = "Turn " + battleLogger.getTurnNumber()
-                    + ": " + combatant.getName() + " is stunned and skips their turn!";
+            String entry = combatant.getName() + " is stunned and skips their turn!";
             System.out.println(entry);
             battleLogger.record(entry);
             return;
@@ -155,8 +151,7 @@ public class BattleEngine {
 
             // Log the action
             String actionName = action.getClass().getSimpleName();
-            battleLogger.record("Turn " + battleLogger.getTurnNumber()
-                    + ": " + combatant.getName() + " used " + actionName
+            battleLogger.record(combatant.getName() + " used " + actionName
                     + " on " + target.getName());
 
             // Combo tracking — did the player deal damage this turn?
@@ -169,6 +164,9 @@ public class BattleEngine {
             if (!target.isAlive()) {
                 checkLootDrop((Enemy) target);
             }
+            
+            // Tick special skill cooldown at the end of each combatant's turn
+            com.combatarena.domain.actions.SpecialSkill.tick(combatant);
 
         // ── Enemy turn ───────────────────────────────────────────────────────
         } else {
@@ -181,8 +179,7 @@ public class BattleEngine {
 
             action.execute(combatant, target);
 
-            battleLogger.record("Turn " + battleLogger.getTurnNumber()
-                    + ": " + combatant.getName() + " used " + action.getClass().getSimpleName()
+            battleLogger.record(combatant.getName() + " used " + action.getClass().getSimpleName()
                     + " on " + target.getName());
 
             // If player took damage, break the combo

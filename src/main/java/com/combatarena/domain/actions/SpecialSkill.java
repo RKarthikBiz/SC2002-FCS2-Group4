@@ -4,7 +4,6 @@ import com.combatarena.domain.combatants.Combatant;
 import com.combatarena.domain.combatants.Warrior;
 import com.combatarena.domain.combatants.Wizard;
 import com.combatarena.util.GameConstants;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -125,9 +124,9 @@ public class SpecialSkill implements Action {
             return;
         }
 
-        // Set cooldown - includes the current turn, so set to COOLDOWN
+        // Set cooldown - does not include the current turn, so set to COOLDOWN + 1
         // tick() will reduce it on the NEXT turn this combatant acts
-        cooldowns.put(attacker, COOLDOWN);
+        cooldowns.put(attacker, COOLDOWN + 1);
 
         // Dispatch to the class-specific ability
         if (attacker instanceof Warrior) {
