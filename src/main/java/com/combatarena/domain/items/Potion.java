@@ -17,10 +17,10 @@ public class Potion implements Item {
         int currentHp = user.getHp();
         int maxHp     = user.getMaxHp();
 
-        int newHp = Math.min(currentHp + healAmount, maxHp);
-        int actualHealed = newHp - currentHp;   // may be less than healAmount if near max HP
+        user.heal(healAmount);
 
-        user.heal(actualHealed);
+        int newHp = user.getHp();
+        int actualHealed = newHp - currentHp;
 
         System.out.println(user.getName() + " uses a Potion and restores "
                 + actualHealed + " HP! (" + newHp + "/" + maxHp + ")");

@@ -93,10 +93,9 @@ public class GameCLI {
         System.out.println("2. Special Skill" + (SpecialSkill.isReady(player) ? " (Ready)" : " (On Cooldown: " + SpecialSkill.getCooldown(player) + ")"));
         System.out.println("3. Use Item" + (player.getInventory().isEmpty() ? " (No items)" : ""));
         System.out.println("4. Defend");
-        System.out.println("5. Flee");
 
         while (true) {
-            System.out.print("Enter your choice (1-5): ");
+            System.out.print("Enter your choice (1-4): ");
             String input = scanner.nextLine();
 
             switch (input) {
@@ -138,10 +137,8 @@ public class GameCLI {
                     break;
                 case "4":
                     return new com.combatarena.domain.actions.Defend();
-                case "5":
-                    return new com.combatarena.domain.actions.Flee();
                 default:
-                    System.out.println("Invalid choice. Please enter a number between 1 and 5.");
+                    System.out.println("Invalid choice. Please enter a number between 1 and 4.");
             }
         }
     }

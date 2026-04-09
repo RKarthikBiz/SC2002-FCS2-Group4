@@ -4,7 +4,6 @@ import com.combatarena.util.GameConstants;
 import com.combatarena.domain.items.Item;
 import com.combatarena.domain.items.Potion;
 import com.combatarena.domain.items.SmokeBomb;
-import com.combatarena.domain.items.PowerStone;
 
 import java.util.Random;
 
@@ -55,23 +54,20 @@ public class LootTable {
      * Randomly selects one item from the available loot pool and returns it.
      * Each item type has an equal probability of being selected.
      *
-     * Loot pool: Potion, SmokeBomb, PowerStone
-     * (PowerStone requires a target — callers must supply one before use.)
+     * Loot pool: Potion, SmokeBomb
+     * (PowerStone is excluded from drops — it requires target/allTargets
+     *  that can only be determined at use-time by the player.)
      *
      * @return a new instance of a randomly chosen Item
      */
     public static Item rollDrop() {
-        int roll = RANDOM.nextInt(3); // 0, 1, or 2
+        int roll = RANDOM.nextInt(2); // 0 or 1
 
         switch (roll) {
             case 0:
                 return new Potion();
             case 1:
                 return new SmokeBomb();
-            case 2:
-                // PowerStone needs target/allTargets set at use-time, not at drop-time.
-                // Return with null parameters; caller must re-construct before use.
-                return new PowerStone(null, null);
             default:
                 // Unreachable, but satisfies compiler
                 return new Potion();

@@ -47,7 +47,10 @@ public class BattleEngine {
     /** Counts consecutive hits the player has landed without taking damage. */
     private int comboCounter;
 
-    /** Stores the original attack value for combo bonus reversal. */
+    /** Tracks attack bonus currently applied by combo (so it can be reversed cleanly). */
+    private int comboBonusApplied;
+
+    /** Stores the base attack value for combo bonus reversal. */
     private int playerBaseAttack;
 
     /** Logs every action taken during the battle for end-of-battle summary. */
@@ -66,6 +69,7 @@ public class BattleEngine {
         this.activeEnemies = new ArrayList<>(level.getInitialEnemies());
         this.backupSpawned = false;
         this.comboCounter  = 0;
+        this.comboBonusApplied = 0;
         this.playerBaseAttack = player.getAttack();
         this.battleLogger  = new BattleLogger();
     }
@@ -92,16 +96,7 @@ public class BattleEngine {
                     continue;
                 }
 
-                boolean fled = processTurn(combatant);
-
-                // Player chose to flee successfully — end battle immediately
-                if (fled) {
-                    battleLogger.record("Turn " + battleLogger.getTurnNumber()
-                            + ": " + player.getName() + " fled the battle!");
-                    battleLogger.printLog();
-                    System.out.println("\n" + player.getName() + " escaped safely!");
-                    return;
-                }
+                processTurn(combatant);
 
                 if (checkGameOver()) {
                     break;
@@ -134,21 +129,24 @@ public class BattleEngine {
     /**
      * Processes a single combatant's turn.
      */
-    public boolean processTurn(Combatant combatant) {
+    public void processTurn(Combatant combatant) {
+        // Tick special skill cooldown at the start of each combatant's turn
+        com.combatarena.domain.actions.SpecialSkill.tick(combatant);
+
         // Stunned combatants skip their turn
         if (isStunned(combatant)) {
             String entry = "Turn " + battleLogger.getTurnNumber()
                     + ": " + combatant.getName() + " is stunned and skips their turn!";
             System.out.println(entry);
             battleLogger.record(entry);
-            return false;
+            return;
         }
 
         // ── Player turn ──────────────────────────────────────────────────────
         if (combatant instanceof Player) {
             Action action     = gameCLI.getPlayerAction();
             Combatant target  = resolveTarget(combatant);
-            if (target == null || action == null) return false;
+            if (target == null || action == null) return;
 
             // Snapshot target HP before action to detect damage dealt and kills
             int targetHpBefore = target.getHp();
@@ -160,15 +158,6 @@ public class BattleEngine {
             battleLogger.record("Turn " + battleLogger.getTurnNumber()
                     + ": " + combatant.getName() + " used " + actionName
                     + " on " + target.getName());
-
-            // Check if Flee was successful
-            if (action instanceof com.combatarena.domain.actions.Flee) {
-                com.combatarena.domain.actions.Flee fleeAction =
-                        (com.combatarena.domain.actions.Flee) action;
-                if (fleeAction.hasFled()) {
-                    return true;
-                }
-            }
 
             // Combo tracking — did the player deal damage this turn?
             boolean dealtDamage = target.getHp() < targetHpBefore;
@@ -186,7 +175,7 @@ public class BattleEngine {
             Enemy enemy       = (Enemy) combatant;
             Action action     = enemy.decideAction();
             Combatant target  = resolveTarget(combatant);
-            if (target == null) return false;
+            if (target == null) return;
 
             int playerHpBefore = player.getHp();
 
@@ -201,8 +190,6 @@ public class BattleEngine {
                 resetCombo();
             }
         }
-
-        return false;
     }
 
     // -------------------------------------------------------------------------
@@ -211,7 +198,8 @@ public class BattleEngine {
 
     /**
      * Increments the combo counter. At every COMBO_BONUS_THRESHOLD hits,
-     * grants the player a temporary ATK bonus for that turn.
+     * grants the player a temporary ATK bonus that is tracked separately
+     * so it can be reversed cleanly without affecting other attack bonuses.
      */
     public void incrementCombo() {
         comboCounter++;
@@ -220,6 +208,7 @@ public class BattleEngine {
         if (comboCounter % GameConstants.COMBO_BONUS_THRESHOLD == 0) {
             int bonus = GameConstants.COMBO_ATK_BONUS;
             player.setAttack(player.getAttack() + bonus);
+            comboBonusApplied += bonus;
             String msg = "  ★ COMBO BONUS! +" + bonus + " ATK this turn for "
                     + player.getName() + "!";
             System.out.println(msg);
@@ -229,14 +218,14 @@ public class BattleEngine {
 
     /**
      * Resets the combo counter when the player takes damage.
-     * Also reverses any active combo attack bonus.
+     * Only reverses the combo-specific attack bonus, leaving other
+     * permanent bonuses (e.g. Wizard's Arcane Blast kills) intact.
      */
     public void resetCombo() {
-        // Reverse any accumulated combo bonuses
-        int currentAttack = player.getAttack();
-        int bonusApplied = currentAttack - playerBaseAttack;
-        if (bonusApplied > 0) {
-            player.setAttack(playerBaseAttack);
+        // Reverse only the combo-applied bonus, not other attack changes
+        if (comboBonusApplied > 0) {
+            player.setAttack(Math.max(playerBaseAttack, player.getAttack() - comboBonusApplied));
+            comboBonusApplied = 0;
         }
 
         if (comboCounter > 0) {
