@@ -15,3 +15,6 @@ out/
 bin/
 build/
 target/
+
+*.bat
+*.ps1
