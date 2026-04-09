@@ -35,6 +35,9 @@ public class BattleLogger {
     /** Current turn number; incremented by incrementTurn(). */
     private int turnNumber;
 
+    /** Tracks the most recent turn header already written to the log. */
+    private int lastLoggedTurn;
+
     // -------------------------------------------------------------------------
     // Constructor
     // -------------------------------------------------------------------------
@@ -42,6 +45,7 @@ public class BattleLogger {
     public BattleLogger() {
         this.log        = new ArrayList<>();
         this.turnNumber = 0;
+        this.lastLoggedTurn = -1;
     }
 
     // -------------------------------------------------------------------------
@@ -49,14 +53,21 @@ public class BattleLogger {
     // -------------------------------------------------------------------------
 
     /**
-     * Appends a new event entry to the log, prefixed with the current turn.
+     * Appends a new event entry to the log.
+     * A turn header is written once when the first event of a turn is recorded.
      *
      * @param entry the event description to record
      */
     public void record(String entry) {
-        String formatted = "[Turn " + turnNumber + "] " + entry;
-        log.add(formatted);
-        System.out.println(formatted);
+        if (turnNumber != lastLoggedTurn) {
+            String turnHeader = "Turn " + turnNumber;
+            log.add(turnHeader);
+            System.out.println(turnHeader);
+            lastLoggedTurn = turnNumber;
+        }
+
+        log.add(entry);
+        System.out.println(entry);
     }
 
     /**
@@ -108,5 +119,6 @@ public class BattleLogger {
     public void reset() {
         log.clear();
         turnNumber = 0;
+        lastLoggedTurn = -1;
     }
 }
