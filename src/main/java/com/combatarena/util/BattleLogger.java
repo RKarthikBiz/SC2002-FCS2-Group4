@@ -63,12 +63,10 @@ public class BattleLogger {
         if (turnNumber != lastLoggedTurn) {
             String turnHeader = "Turn " + turnNumber;
             log.add(turnHeader);
-            System.out.println(turnHeader);
             lastLoggedTurn = turnNumber;
         }
 
         log.add(entry);
-        System.out.println(entry);
     }
 
     /**
@@ -76,7 +74,7 @@ public class BattleLogger {
      * Useful for displaying a full battle recap after the fight ends.
      */
     public void printLog() {
-        System.out.println("\n=== Battle Log ===");
+        System.out.println("\n=== Battle Log Recap ===");
         for (String entry : log) {
             System.out.println(entry);
         }
@@ -91,7 +89,8 @@ public class BattleLogger {
         turnNumber++;
         String turnHeader = "Turn " + turnNumber;
         log.add(turnHeader);
-        System.out.println(turnHeader);
+        System.out.println();
+        System.out.println("-------------------- " + turnHeader + " --------------------");
         lastLoggedTurn = turnNumber;
     }
 

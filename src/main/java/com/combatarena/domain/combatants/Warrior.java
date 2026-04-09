@@ -23,8 +23,8 @@ public class Warrior extends Player {
             target.takeDamage(damage);
             applyStun(target);
             setSpecialSkillCooldown(GameConstants.SPECIAL_SKILL_COOLDOWN);
-            System.out.println(getName() + " uses Shield Bash on " + target.getName()
-                    + " for " + damage + " damage!");
+            System.out.println("  [SKILL ] " + getName() + " -> " + target.getName()
+                    + " | Shield Bash | " + damage + " dmg");
         }
     }
 

@@ -24,9 +24,9 @@ public class BasicAttack implements Action {
             damage = (int) Math.ceil(damage * CRIT_MULTIPLIER);
         }
 
-        String critText = isCrit ? " (CRITICAL HIT!)" : "";
-        System.out.println(attacker.getName() + " performs a Basic Attack on "
-                + target.getName() + " for " + damage + " damage!" + critText);
+        String critText = isCrit ? " | CRITICAL" : "";
+        System.out.println("  [ATK   ] " + attacker.getName() + " -> " + target.getName()
+            + " | Basic Attack | " + damage + " dmg" + critText);
 
         target.takeDamage(damage);
     }

@@ -12,7 +12,7 @@ public class StunEffect implements StatusEffect {
 
     @Override
     public void apply(Combatant target) {
-        System.out.println(target.getName() + " is stunned and cannot act!");
+        System.out.println("  [STATUS] " + target.getName() + " is stunned.");
     }
 
     @Override
@@ -22,7 +22,7 @@ public class StunEffect implements StatusEffect {
 
     @Override
     public void remove(Combatant target) {
-        System.out.println(target.getName() + " is no longer stunned.");
+        System.out.println("  [STATUS] " + target.getName() + " recovered from stun.");
     }
 
     @Override

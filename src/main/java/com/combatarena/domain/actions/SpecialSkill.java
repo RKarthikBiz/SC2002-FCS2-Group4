@@ -119,8 +119,9 @@ public class SpecialSkill implements Action {
     public void execute(Combatant attacker, Combatant target) {
         // Guard: skill must be ready
         if (!isReady(attacker)) {
-            System.out.println(attacker.getName() + "'s Special Skill is on cooldown! ("
-                    + getCooldown(attacker) + " turn(s) remaining)");
+            System.out.println("  [INFO  ] " + attacker.getName()
+                + " special skill is on cooldown (" + getCooldown(attacker)
+                + " turn(s) remaining).");
             return;
         }
 
@@ -147,7 +148,6 @@ public class SpecialSkill implements Action {
      * Warrior: shieldBash(target) — delegates to Warrior's own method.
      */
     private void executeWarriorSkill(Warrior warrior, Combatant target) {
-        System.out.println(warrior.getName() + " uses Shield Bash on " + target.getName() + "!");
         warrior.shieldBash(target);
     }
 
@@ -156,7 +156,7 @@ public class SpecialSkill implements Action {
      * The primary target and allTargets list are passed to the Wizard's method.
      */
     private void executeWizardSkill(Wizard wizard, Combatant target) {
-        System.out.println(wizard.getName() + " uses Arcane Blast!");
+        System.out.println("  [SKILL ] " + wizard.getName() + " casts Arcane Blast.");
         if (allTargets != null && !allTargets.isEmpty()) {
             wizard.arcaneBlast(target, allTargets);
         } else {
@@ -170,8 +170,8 @@ public class SpecialSkill implements Action {
      */
     private void executeDefaultSkill(Combatant attacker, Combatant target) {
         int damage = attacker.getAttack();
-        System.out.println(attacker.getName() + " uses a Special Skill on "
-                + target.getName() + " for " + damage + " damage!");
+        System.out.println("  [SKILL ] " + attacker.getName() + " -> " + target.getName()
+            + " | Special Skill | " + damage + " dmg");
         target.takeDamage(damage);
     }
 }
