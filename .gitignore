@@ -17,4 +17,3 @@ build/
 target/
 
 *.bat
-*.ps1
