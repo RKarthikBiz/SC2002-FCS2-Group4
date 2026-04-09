@@ -35,7 +35,7 @@ public class Main {
             chooseTwoStartingItems(setupScanner, player, level);
 
             System.out.println("\n=== Starting Battle ===");
-            System.out.println("Player: " + player.getName() + " (" + player.getClass().getSimpleName() + ")");
+            System.out.println("Player: " + player.getName());
             System.out.println("Difficulty: " + level.getDifficulty());
             System.out.println("Items chosen: " + inventoryAsString(player));
 
@@ -103,7 +103,7 @@ public class Main {
 
         if (choice == 2) {
             return new Wizard(
-                "Hero",
+                "Wizard",
                 GameConstants.WIZARD_HP,
                 GameConstants.WIZARD_ATK,
                 GameConstants.WIZARD_DEF,
@@ -111,7 +111,7 @@ public class Main {
             );
         }
         return new Warrior(
-            "Hero",
+            "Warrior",
             GameConstants.WARRIOR_HP,
             GameConstants.WARRIOR_ATK,
             GameConstants.WARRIOR_DEF,
