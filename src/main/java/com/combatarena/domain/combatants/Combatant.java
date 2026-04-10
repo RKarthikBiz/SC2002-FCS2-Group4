@@ -1,5 +1,6 @@
 package com.combatarena.domain.combatants;
 
+import com.combatarena.domain.statuseffects.SmokeBombEffect;
 import com.combatarena.domain.statuseffects.StatusEffect;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -35,11 +36,29 @@ public abstract class Combatant {
     /**
      * Reduces HP by the provided post-mitigated damage amount.
      * HP is clamped at 0.
+     * If SmokeBombEffect is active, incoming damage is suppressed to 0.
      *
      * @param amount final damage value to apply
      */
     public void takeDamage(int amount) {
+        if (hasSmokeBombEffect()) {
+            amount = 0;
+        }
         this.hp = Math.max(0, this.hp - Math.max(0, amount));
+    }
+
+    /**
+     * Checks if SmokeBombEffect is currently active on this combatant.
+     *
+     * @return true if SmokeBombEffect is active, false otherwise
+     */
+    private boolean hasSmokeBombEffect() {
+        for (StatusEffect effect : statusEffects) {
+            if (effect instanceof SmokeBombEffect) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

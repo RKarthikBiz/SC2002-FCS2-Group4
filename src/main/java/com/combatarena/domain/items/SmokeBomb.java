@@ -22,6 +22,6 @@ public class SmokeBomb implements Item {
             + " this turn and next turn.");
 
         SmokeBombEffect effect = new SmokeBombEffect(GameConstants.SMOKE_BOMB_DURATION);
-        user.addStatusEffect(effect);
+        user.applyStatusEffect(effect);
     }
 }
