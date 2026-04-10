@@ -24,11 +24,14 @@ public class BasicAttack implements Action {
             damage = (int) Math.ceil(damage * CRIT_MULTIPLIER);
         }
 
-        String critText = isCrit ? " | CRITICAL" : "";
-        System.out.println("  [ATK   ] " + attacker.getName() + " -> " + target.getName()
-            + " | Basic Attack | " + damage + " dmg" + critText);
-
+        int hpBefore = target.getHp();
         target.takeDamage(damage);
+        int actualDamage = Math.max(0, hpBefore - target.getHp());
+
+        String critText = isCrit ? " | CRITICAL" : "";
+        String blockedText = (damage > 0 && actualDamage == 0) ? " | BLOCKED" : "";
+        System.out.println("  [ATK   ] " + attacker.getName() + " -> " + target.getName()
+            + " | Basic Attack | " + actualDamage + " dmg" + critText + blockedText);
     }
 
     /**
