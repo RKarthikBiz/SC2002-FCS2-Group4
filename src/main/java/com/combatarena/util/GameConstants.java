@@ -107,6 +107,11 @@ public final class GameConstants {
     // Combo system                                   (return type: int)
     // =========================================================================
 
+    /** Damage thresholds per round to break the player's combo, based on difficulty */
+    public static final int COMBO_THRESHOLD_EASY = 60;
+    public static final int COMBO_THRESHOLD_MEDIUM = 55;
+    public static final int COMBO_THRESHOLD_HARD = 45;
+    
     /** Number of consecutive hits required to trigger the combo bonus. */
     public static final int COMBO_BONUS_THRESHOLD = 3;
 
