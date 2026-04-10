@@ -21,6 +21,6 @@ public class Defend implements Action {
                 + "(+" + GameConstants.DEFEND_BONUS_DEF + " DEF for " + GameConstants.DEFEND_DURATION + " turns)");
 
         DefenseBoostEffect defenseBoost = new DefenseBoostEffect(GameConstants.DEFEND_DURATION, GameConstants.DEFEND_BONUS_DEF);
-        attacker.addStatusEffect(defenseBoost);
+        attacker.applyStatusEffect(defenseBoost);
     }
 }
