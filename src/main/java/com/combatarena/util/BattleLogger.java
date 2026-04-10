@@ -74,11 +74,20 @@ public class BattleLogger {
      * Useful for displaying a full battle recap after the fight ends.
      */
     public void printLog() {
-        System.out.println("\n=== Battle Log Recap ===");
+        System.out.println();
+        System.out.println("============================================================");
+        System.out.println("                      BATTLE LOG RECAP");
+        System.out.println("============================================================");
         for (String entry : log) {
-            System.out.println(entry);
+            if (entry != null && entry.startsWith("Turn ")) {
+                String turnValue = entry.substring("Turn ".length()).trim();
+                System.out.println("[TURN " + turnValue + "]");
+            } else {
+                System.out.println("  - " + (entry == null ? "" : entry.trim()));
+            }
         }
-        System.out.println("==================\n");
+        System.out.println("============================================================");
+        System.out.println();
     }
 
     /**

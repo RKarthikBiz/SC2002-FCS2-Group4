@@ -2,9 +2,14 @@ package com.combatarena.control;
 
 import com.combatarena.boundary.GameCLI;
 import com.combatarena.domain.actions.Action;
+import com.combatarena.domain.actions.BasicAttack;
+import com.combatarena.domain.actions.SpecialSkill;
+import com.combatarena.domain.actions.UseItem;
 import com.combatarena.domain.combatants.Combatant;
 import com.combatarena.domain.combatants.Enemy;
 import com.combatarena.domain.combatants.Player;
+import com.combatarena.domain.combatants.Warrior;
+import com.combatarena.domain.combatants.Wizard;
 import com.combatarena.domain.items.Item;
 import com.combatarena.domain.level.Level;
 import com.combatarena.domain.statuseffects.StatusEffect;
@@ -150,10 +155,7 @@ public class BattleEngine {
 
             action.execute(combatant, target);
 
-            // Log the action
-            String actionName = action.getClass().getSimpleName();
-            battleLogger.record(combatant.getName() + " used " + actionName
-                    + " on " + target.getName());
+                battleLogger.record(formatActionRecapEntry(combatant, action, target));
 
             // Combo tracking — did the player deal damage this turn?
             boolean dealtDamage = target.getHp() < targetHpBefore;
@@ -180,8 +182,7 @@ public class BattleEngine {
 
             action.execute(combatant, target);
 
-            battleLogger.record(combatant.getName() + " used " + action.getClass().getSimpleName()
-                    + " on " + target.getName());
+                battleLogger.record(formatActionRecapEntry(combatant, action, target));
 
             // If player took damage, break the combo
             if (player.getHp() < playerHpBefore) {
@@ -201,7 +202,9 @@ public class BattleEngine {
      */
     public void incrementCombo() {
         comboCounter++;
-        System.out.println("  [COMBO ] Chain x" + comboCounter);
+        String chainMsg = "[COMBO] Chain x" + comboCounter;
+        System.out.println("  " + chainMsg);
+        battleLogger.record(chainMsg);
 
         if (comboCounter % GameConstants.COMBO_BONUS_THRESHOLD == 0) {
             int bonus = GameConstants.COMBO_ATK_BONUS;
@@ -227,7 +230,9 @@ public class BattleEngine {
         }
 
         if (comboCounter > 0) {
-            System.out.println("  [COMBO ] Broken (was x" + comboCounter + ")");
+            String breakMsg = "[COMBO] Broken (was x" + comboCounter + ")";
+            System.out.println("  " + breakMsg);
+            battleLogger.record(breakMsg);
             comboCounter = 0;
         }
     }
@@ -352,6 +357,37 @@ public class BattleEngine {
             }
         }
         combatant.setStatusEffects(filtered);
+    }
+
+    private String formatActionRecapEntry(Combatant actor, Action action, Combatant target) {
+        String actorName = actor == null ? "Unknown" : actor.getName();
+        String targetName = target == null ? "Unknown target" : target.getName();
+
+        if (action == null) {
+            return actorName + " acted.";
+        }
+
+        String actionLabel;
+        if (action instanceof SpecialSkill) {
+            if (actor instanceof Warrior) {
+                actionLabel = "Shield Bash";
+            } else if (actor instanceof Wizard) {
+                actionLabel = "Arcane Blast";
+            } else {
+                actionLabel = "Special Skill";
+            }
+        } else if (action instanceof UseItem useItem) {
+            actionLabel = "Use Item (" + useItem.getItemName() + ")";
+        } else if (action instanceof BasicAttack basicAttack) {
+            String critSuffix = basicAttack.wasLastCritical() ? " [CRITICAL]" : "";
+            String blockedSuffix = basicAttack.wasLastBlocked() ? " [BLOCKED]" : "";
+            return actorName + " used Basic Attack on " + targetName
+                    + " (" + basicAttack.getLastActualDamage() + " dmg)"
+                    + critSuffix + blockedSuffix;
+        } else {
+            actionLabel = action.getClass().getSimpleName();
+        }
+        return actorName + " used " + actionLabel + " on " + targetName;
     }
 
     // -------------------------------------------------------------------------

@@ -41,4 +41,8 @@ public class UseItem implements Action {
             player.removeItem(item);
         }
     }
+
+    public String getItemName() {
+        return item.getClass().getSimpleName();
+    }
 }

@@ -14,6 +14,9 @@ public class BasicAttack implements Action {
 
     private final double CRIT_CHANCE = GameConstants.CRIT_CHANCE;
     private final double CRIT_MULTIPLIER = GameConstants.CRIT_MULTIPLIER;
+    private boolean lastCritical;
+    private boolean lastBlocked;
+    private int lastActualDamage;
 
     @Override
     public void execute(Combatant attacker, Combatant target) {
@@ -28,10 +31,26 @@ public class BasicAttack implements Action {
         target.takeDamage(damage);
         int actualDamage = Math.max(0, hpBefore - target.getHp());
 
+        this.lastCritical = isCrit;
+        this.lastBlocked = damage > 0 && actualDamage == 0;
+        this.lastActualDamage = actualDamage;
+
         String critText = isCrit ? " | CRITICAL" : "";
-        String blockedText = (damage > 0 && actualDamage == 0) ? " | BLOCKED" : "";
+        String blockedText = lastBlocked ? " | BLOCKED" : "";
         System.out.println("  [ATK   ] " + attacker.getName() + " -> " + target.getName()
             + " | Basic Attack | " + actualDamage + " dmg" + critText + blockedText);
+    }
+
+    public boolean wasLastCritical() {
+        return lastCritical;
+    }
+
+    public boolean wasLastBlocked() {
+        return lastBlocked;
+    }
+
+    public int getLastActualDamage() {
+        return lastActualDamage;
     }
 
     /**
