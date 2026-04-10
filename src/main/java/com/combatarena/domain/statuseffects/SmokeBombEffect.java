@@ -19,7 +19,7 @@ public class SmokeBombEffect implements StatusEffect {
 
     @Override
     public void apply(Combatant target) {
-        System.out.println(target.getName() + " is obscured by a Smoke Bomb! Enemy attacks will deal 0 damage.");
+        // System.out.println(target.getName() + " is obscured by a Smoke Bomb! Enemy attacks will deal 0 damage.");
     }
 
     @Override
@@ -29,7 +29,7 @@ public class SmokeBombEffect implements StatusEffect {
 
     @Override
     public void remove(Combatant target) {
-        System.out.println("The smoke clears around " + target.getName() + ".");
+        // System.out.println("The smoke clears around " + target.getName() + ".");
     }
 
     @Override
