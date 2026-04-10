@@ -60,6 +60,9 @@ public class BattleEngine {
     /** Logs every action taken during the battle for end-of-battle summary. */
     private final BattleLogger battleLogger;
 
+    /** Tracks how much damage the player has taken in the current round. */
+    private int damageTakenThisRound;
+
     // -------------------------------------------------------------------------
     // Constructor
     // -------------------------------------------------------------------------
@@ -91,6 +94,8 @@ public class BattleEngine {
 
         while (!checkGameOver()) {
             battleLogger.incrementTurn();
+
+            damageTakenThisRound = 0;
 
             List<Combatant> participants = buildParticipantList();
             List<Combatant> turnOrder   = turnStrategy.determineTurnOrder(participants);
@@ -185,8 +190,15 @@ public class BattleEngine {
                 battleLogger.record(formatActionRecapEntry(combatant, action, target));
 
             // If player took damage, break the combo
-            if (player.getHp() < playerHpBefore) {
-                resetCombo();
+            int damageTakenThisTurn= playerHpBefore - player.getHp();
+            
+            if (damageTakenThisTurn > 0){
+                damageTakenThisRound += damageTakenThisTurn;
+
+                int threshold = getComboDamageThreshold();
+
+                if (damageTakenThisRound >= threshold){
+                    resetCombo();
             }
         }
     }
@@ -388,6 +400,21 @@ public class BattleEngine {
             actionLabel = action.getClass().getSimpleName();
         }
         return actorName + " used " + actionLabel + " on " + targetName;
+    }
+
+    /**
+     * Determines the combo damage reset threshold based on the current level's difficulty.
+     */
+    private int getComboDamageThreshold() {
+        // NOTE: If your Level class uses a different method name to get the difficulty level 
+        // (like getDifficulty() or getId()), change "getLevelNo()" to match it!
+        int level = currentLevel.getLevelNo(); 
+        switch(level) {
+            case 1: return GameConstants.COMBO_THRESHOLD_EASY;
+            case 2: return GameConstants.COMBO_THRESHOLD_MEDIUM;
+            case 3: return GameConstants.COMBO_THRESHOLD_HARD;
+            default: return GameConstants.COMBO_THRESHOLD_EASY;
+        }
     }
 
     // -------------------------------------------------------------------------
