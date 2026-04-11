@@ -17,8 +17,9 @@ public class Defend implements Action {
 
     @Override
     public void execute(Combatant attacker, Combatant target) {
-        System.out.println(attacker.getName() + " takes a defensive stance! "
-                + "(+" + GameConstants.DEFEND_BONUS_DEF + " DEF for " + GameConstants.DEFEND_DURATION + " turns)");
+        System.out.println("  [DEFEND] " + attacker.getName() + " braces for impact"
+            + " ( +" + GameConstants.DEFEND_BONUS_DEF + " DEF, "
+            + GameConstants.DEFEND_DURATION + " turns )");
 
         DefenseBoostEffect defenseBoost = new DefenseBoostEffect(GameConstants.DEFEND_DURATION, GameConstants.DEFEND_BONUS_DEF);
         attacker.applyStatusEffect(defenseBoost);

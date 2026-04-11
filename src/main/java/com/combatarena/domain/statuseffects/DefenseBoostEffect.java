@@ -15,7 +15,8 @@ public class DefenseBoostEffect implements StatusEffect {
     @Override
     public void apply(Combatant target) {
         target.setDefense(target.getDefense() + defenseBoost);
-        System.out.println(target.getName() + " raises their guard! Defense increased by " + defenseBoost + ".");
+        System.out.println("  [STATUS] " + target.getName() + " DEF increased by "
+                + defenseBoost + ".");
     }
 
     @Override
@@ -26,7 +27,7 @@ public class DefenseBoostEffect implements StatusEffect {
     @Override
     public void remove(Combatant target) {
         target.setDefense(target.getDefense() - defenseBoost);
-        System.out.println(target.getName() + "'s defense returns to normal.");
+        System.out.println("  [STATUS] " + target.getName() + " DEF boost ended.");
     }
 
     @Override
