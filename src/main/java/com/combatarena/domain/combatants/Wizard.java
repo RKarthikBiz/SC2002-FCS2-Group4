@@ -42,8 +42,8 @@ public class Wizard extends Player {
 
             int damage = Math.max(0, getAttack() + attackBonus - enemy.getDefense());
             enemy.takeDamage(damage);
-            System.out.println(getName() + " casts Arcane Blast on " + enemy.getName()
-                    + " for " + damage + " damage!");
+                System.out.println("  [SKILL ] " + getName() + " -> " + enemy.getName()
+                    + " | Arcane Blast | " + damage + " dmg");
 
             if (!enemy.isAlive()) {
                 arcaneBlastBonus(GameConstants.ARCANE_BLAST_ATK_BONUS);
@@ -70,7 +70,8 @@ public class Wizard extends Player {
         int gain = Math.max(0, amount);
         this.attackBonus += gain;
         setAttack(getAttack() + gain);
-        System.out.println(getName() + " gains +" + gain + " attack (Arcane Bonus total: " + attackBonus + ")");
+        System.out.println("  [STATUS] " + getName() + " Arcane Bonus +" + gain
+                + " (total: " + attackBonus + ")");
     }
 
     /**
