@@ -78,6 +78,18 @@ public class Level {
         return !backupEnemies.isEmpty();
     }
 
+    /**
+     * Returns the difficulty as a numeric level number.
+     */
+    public int getLevelNo() {
+        return switch (difficulty.toLowerCase()) {
+            case "easy"   -> 1;
+            case "medium" -> 2;
+            case "hard"   -> 3;
+            default       -> 1;
+        };
+    }
+
     @Override
     public String toString() {
         return String.format("Level[difficulty=%s, initial=%d enemies, backup=%d enemies]",

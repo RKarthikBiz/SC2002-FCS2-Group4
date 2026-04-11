@@ -199,6 +199,7 @@ public class BattleEngine {
 
                 if (damageTakenThisRound >= threshold){
                     resetCombo();
+                }
             }
         }
     }
