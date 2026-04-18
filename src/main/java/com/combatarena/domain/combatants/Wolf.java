@@ -8,7 +8,7 @@ import java.util.Arrays;
 public class Wolf extends Enemy {
 
     /**
-     * Constructor to initialize a Wolf with default attributes.
+     * Creates a wolf and assigns a random title.
      */
     public Wolf(String name, int hp, int attack, int defense, int speed) {
         super(name, hp, attack, defense, speed);
@@ -17,11 +17,7 @@ public class Wolf extends Enemy {
     }
 
     /**
-     * Wolf's AI decision-making for combat actions.
-     * Wolves typically perform a fierce attack.
-     * TODO: Implementation required by someone else - specific action implementation.
-     * 
-     * @return A BasicAttack action (or null if not available)
+     * Wolves currently default to basic attack.
      */
     @Override
     public Action decideAction() {
@@ -29,17 +25,13 @@ public class Wolf extends Enemy {
     }
 
     /**
-     * Performs the Wolf's turn in combat.
-     * Calls the parent performTurn which uses decideAction().
+     * Flavor text for the wolf's turn.
      */
     @Override
     public void performTurn() {
         System.out.println(getName() + " snaps aggressively.");
     }
 
-    /**
-     * Returns a string representation of the Wolf.
-     */
     @Override
     public String toString() {
         return "Wolf: " + super.toString();

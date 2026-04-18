@@ -4,11 +4,7 @@ import com.combatarena.domain.combatants.Combatant;
 import com.combatarena.util.GameConstants;
 
 /**
- * BasicAttack - performs a standard attack on a user-selected target.
- *
- * Damage formula : max(0, attacker.attack - target.defense)
- * Critical hits  : CRIT_CHANCE probability to deal CRIT_MULTIPLIER× damage
- * Target HP floor: 0  (HP cannot go below 0)
+ * Standard single-target attack with a critical-hit chance.
  */
 public class BasicAttack implements Action {
 
@@ -54,9 +50,7 @@ public class BasicAttack implements Action {
     }
 
     /**
-     * Determines if this attack is a critical hit based on CRIT_CHANCE.
-     *
-     * @return true if the attack is a critical hit
+     * Rolls crit chance for the current attack.
      */
     private boolean isCriticalHit() {
         return Math.random() < CRIT_CHANCE;

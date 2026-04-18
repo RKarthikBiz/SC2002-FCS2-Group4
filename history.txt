@@ -1,0 +1,49 @@
+0e2ab81 RKarthikBiz feat: update README.md
+a0bbe05 Yash Raj Fixed old formatting to the new formatting for wizard
+f143903 Yash Raj Fixed formatting when defending for warrior
+6c01eed Lilwaizy10 Syntax error and getlevel number helper added
+8d5bfd4 blackbird874 added a variable to track the damage taken in the current round, and a helper method to grab the correct threshold based on the level
+e68fbd1 blackbird874 added difficulty based thresholds for combo
+7b496fe blackbird874 debugged defend class to affect defense stats and reduce enemy damage
+910bbf3 Yash Raj Changed the formatting and amt ofcontent in battle log recap
+cf8250f Yash Raj Ficed printing of dmg when smoke bomb effect is active so that msg says blocked instead of saying the user took dmg even though the player didnt
+880a722 Yash Raj Removed the old printing from smoke bomb so that only the new style prints out
+0a29c3c RKarthikBiz feat: Fixed SmokeBomb item
+b224389 Yash Raj Fix item use printing and formatting
+c73d6a5 Yash Raj Add run-game script for building and executing Java application
+b797251 Yash Raj Stun lifecycle behavior fix and standardize combat event tags and turn header formatting
+c7b9963 Yash Raj standardize combat event tags and turn header formatting
+fc4d3db Yash Raj redesign battle UI layout and action menus
+592e5c1 Yash Raj Removing flee cuz not doing that anymore
+23472f6 Yash Raj Fixed cooldown starting at n-1 and not n
+d031eec Yash Raj feat: Fix BattleLogger to ensure turn headers are logged correctly at the start of the turn
+457f7d9 Lilwaizy10 Merge branch 'main' of https://github.com/RKarthikBiz/SC2002-FCS2-Group4
+73be229 Yash Raj feat: changed so that turn number only prints once, still need to edit battleengine so that the turn in the individual step doesnt print
+2c754d5 Lilwaizy10 Fixed Logic issues and removed Flee feature
+d710e3a Yash Raj feat: simplify player display and update character naming in main game flow
+5c9b5a2 RKarthikBiz feat: fix GameConsants values
+23b047c Yash Raj feat: enhance main game flow with player selection, difficulty choice, and item selection
+56682e5 Lilwaizy10 Fixed packaging and other critical issues
+4bee0b7 Yash Raj feat: enhance enemy classes with dynamic naming and item drop functionality
+269b2e5 RKarthikBiz feat: implement flee action and util classes
+4f19780 Lilwaizy10 packaging changes
+3782a2e blackbird874 Add GameCLI class
+29e3980 Lilwaizy10 Implemented new features to BattleEngine
+de43594 Yu Hng added the code under the StatusEffect
+92bbc28 Yash Raj implement Warrior Shield Bash and Wizard Arcane Blast with cooldown/bonus constants. StatusEffects not implemented yet, so a little shenanigan to not get errors.
+e198e90 Yash Raj enforce basic-attack enemy behavior for Goblin and Wolf
+239e31d Yash Raj refactor Combatant core damage/status lifecycle and Player cooldown/inventory handling
+f35f810 Yash Raj fixed game constants to be as stated in the assignment doc
+638b185 Lilwaizy10 Fixed packaging issues for Control package
+0c5357e Lilwaizy10 Fixed packaging and constructor call issues in Level package
+1dc9917 RKarthikBiz feat: initial util commit
+e6059ca RKarthikBiz feat: initial items commit
+85fc4bd RKarthikBiz feat: initial actions commit
+5f839f8 Yash Raj Combatants package created (only edited / created files for my part). The other parts that Combatants need still need to be done and so rn, i dont think combatants will compile.
+1610653 Lilwaizy10 Made Level package, control package and updated UML diagram
+e630a14 Lilwaizy10 File Structure
+d9f8d8e RKarthikBiz docs: update README with diagram guidelines
+a2bc166 RKarthikBiz docs: add project brief
+7638b2b RKarthikBiz docs: update README with diagram guidelines
+0d3bca6 RKarthikBiz feat: initial folder structure
+7e4cff0 RKarthikBiz feat: add initial uml

@@ -8,7 +8,7 @@ public class Wizard extends Player {
     private int attackBonus;
 
     /**
-     * Constructor to initialize a Wizard with default attributes.
+     * Creates a wizard.
      */
     public Wizard(String name, int hp, int attack, int defense, int speed) {
         super(name, hp, attack, defense, speed);
@@ -16,11 +16,7 @@ public class Wizard extends Player {
     }
 
     /**
-     * Wizard's special ability - Arcane Blast.
-     * Performs a magical attack on a target that deals increased damage based on attack bonus.
-     * TODO: Implementation required by someone else - arcane buff effect application.
-     * 
-     * @param target The combatant to blast with arcane magic
+     * Single-target helper for Arcane Blast.
      */
     public void arcaneBlast(Combatant target) {
         arcaneBlast(target, target == null ? Collections.emptyList() : Collections.singletonList(target));
@@ -54,10 +50,7 @@ public class Wizard extends Player {
     }
 
     /**
-     * Adds a temporary attack bonus to the Wizard's arcane blasts.
-     * The bonus persists until reset or overwritten.
-     * 
-     * @param amount The amount to increase attack bonus by
+     * Public helper that forwards to arcaneBlastBonus.
      */
     public void addAttackBonus(int amount) {
         arcaneBlastBonus(amount);
@@ -75,7 +68,7 @@ public class Wizard extends Player {
     }
 
     /**
-     * Resets the attack bonus to 0.
+     * Resets accumulated Arcane Blast bonus.
      */
     public void resetAttackBonus() {
         setAttack(Math.max(0, getAttack() - attackBonus));
@@ -83,18 +76,14 @@ public class Wizard extends Player {
     }
 
     /**
-     * Gets the current attack bonus.
-     * 
-     * @return The attack bonus value
+     * Current attack bonus from Arcane Blast kills.
      */
     public int getAttackBonus() {
         return attackBonus;
     }
 
     /**
-     * Sets the attack bonus to a specific value.
-     * 
-     * @param bonus The bonus value to set
+     * Replaces the current bonus and keeps attack in sync.
      */
     public void setAttackBonus(int bonus) {
         int clamped = Math.max(0, bonus);
@@ -104,9 +93,7 @@ public class Wizard extends Player {
     }
 
     /**
-     * Performs the Wizard's turn in combat.
-     * Base implementation prepares for casting.
-     * This can be overridden by game logic to use AI decision-making.
+     * Default wizard turn behavior.
      */
     @Override
     public void performTurn() {
@@ -114,9 +101,6 @@ public class Wizard extends Player {
         System.out.println(getName() + " channels magical energy. (Arcane Bonus: " + attackBonus + ")");
     }
 
-    /**
-     * Returns a string representation of the Wizard.
-     */
     @Override
     public String toString() {
         return "Wizard: " + super.toString() + " (Arcane Bonus: " + attackBonus + ")";

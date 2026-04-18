@@ -10,23 +10,15 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Factory class responsible for constructing pre-configured Level objects.
- *
- * Centralises all level-composition knowledge in one place (SRP).
- * Adding a new difficulty only requires a new case here — no other
- * class needs to change (OCP).
+ * Builds predefined levels for each difficulty.
  */
 public class LevelFactory {
 
-    // Private constructor — this class is never instantiated, only called statically.
+    // Utility class.
     private LevelFactory() {}
 
     /**
-     * Creates and returns a Level based on the requested difficulty.
-     *
-     * @param difficulty "Easy", "Medium", or "Hard" (case-insensitive)
-     * @return a fully configured Level instance
-     * @throws IllegalArgumentException if an unrecognised difficulty is passed
+     * Creates a level from a difficulty name.
      */
     public static Level createLevel(String difficulty) {
         switch (difficulty.toLowerCase()) {
@@ -43,9 +35,7 @@ public class LevelFactory {
         }
     }
 
-    // -------------------------------------------------------------------------
-    // Private helper: creates a fresh Goblin using stats from GameConstants
-    // -------------------------------------------------------------------------
+    /** Creates a goblin using configured constants. */
     private static Goblin newGoblin() {
         return new Goblin(
                 "Goblin",
@@ -56,9 +46,7 @@ public class LevelFactory {
         );
     }
 
-    // -------------------------------------------------------------------------
-    // Private helper: creates a fresh Wolf using stats from GameConstants
-    // -------------------------------------------------------------------------
+    /** Creates a wolf using configured constants. */
     private static Wolf newWolf() {
         return new Wolf(
                 "Wolf",
@@ -69,12 +57,8 @@ public class LevelFactory {
         );
     }
 
-    // -------------------------------------------------------------------------
-    // Private level builders
-    // -------------------------------------------------------------------------
-
     /**
-     * Easy: 3 Goblins, no backup wave.
+        * Easy level setup.
      */
     private static Level createEasyLevel() {
         List<Enemy> initial = Arrays.asList(
@@ -87,7 +71,7 @@ public class LevelFactory {
     }
 
     /**
-     * Medium: 1 Goblin + 1 Wolf initially, backup wave of 2 Wolves.
+        * Medium level setup.
      */
     private static Level createMediumLevel() {
         List<Enemy> initial = Arrays.asList(
@@ -102,7 +86,7 @@ public class LevelFactory {
     }
 
     /**
-     * Hard: 2 Goblins initially, backup wave of 1 Goblin + 2 Wolves.
+        * Hard level setup.
      */
     private static Level createHardLevel() {
         List<Enemy> initial = Arrays.asList(

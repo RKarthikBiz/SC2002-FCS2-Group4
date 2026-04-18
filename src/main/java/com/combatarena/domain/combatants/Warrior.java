@@ -5,17 +5,14 @@ import com.combatarena.util.GameConstants;
 
 public class Warrior extends Player {
     /**
-     * Constructor to initialize a Warrior with default attributes.
+     * Creates a warrior.
      */
     public Warrior(String name, int hp, int attack, int defense, int speed) {
         super(name, hp, attack, defense, speed);
     }
 
     /**
-     * Warrior's special ability - Shield Bash.
-     * Performs a melee attack on a target that also stuns them.
-     *
-     * @param target The combatant to bash with the shield
+     * Deals damage and applies stun.
      */
     public void shieldBash(Combatant target) {
         if (target != null && target.isAlive()) {
@@ -29,8 +26,7 @@ public class Warrior extends Player {
     }
 
     /**
-     * Performs the Warrior's turn in combat.
-     * Base implementation prepares for close combat.
+        * Default warrior turn behavior.
      */
     @Override
     public void performTurn() {
@@ -38,16 +34,13 @@ public class Warrior extends Player {
         System.out.println(getName() + " braces for close combat.");
     }
 
-    /**
-     * Returns a string representation of the Warrior.
-     */
     @Override
     public String toString() {
         return "Warrior: " + super.toString();
     }
 
     /**
-     * Applies a stun effect to the target for STUN_DURATION turns.
+     * Applies the configured stun effect.
      */
     private void applyStun(Combatant target) {
         StunEffect stun = new StunEffect(GameConstants.STUN_DURATION);

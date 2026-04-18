@@ -2,6 +2,9 @@ package com.combatarena.domain.statuseffects;
 
 import com.combatarena.domain.combatants.Combatant;
 
+/**
+ * Temporary attack boost effect.
+ */
 public class ArcaneBlastBuff implements StatusEffect {
     private int duration;
     private int attackBoost;
