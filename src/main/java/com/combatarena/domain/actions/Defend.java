@@ -5,13 +5,7 @@ import com.combatarena.domain.statuseffects.DefenseBoostEffect;
 import com.combatarena.util.GameConstants;
 
 /**
- * Defend - the combatant braces for incoming attacks.
- *
- * Effect  : +DEFENSE_BONUS defense for the current round and the next round (2 turns total).
- * Mechanic: Applies a DefenseBoostEffect to the attacker (self-buff).
- *           The effect lasts DEFEND_DURATION turns and is decremented each time the
- *           combatant takes a turn (via Combatant.applyStatusEffects /
- *           StatusEffect.tick()).
+ * Self-buff action that raises defense for a short duration.
  */
 public class Defend implements Action {
 

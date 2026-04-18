@@ -5,9 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Represents a battle level with a difficulty tier and two enemy waves.
- * The initial wave is the first group of enemies the player faces.
- * The backup wave spawns after the entire initial wave is wiped.
+ * Holds enemy waves and metadata for one level.
  */
 public class Level {
 
@@ -15,11 +13,11 @@ public class Level {
     private final List<Enemy> initialEnemies;
     private final List<Enemy> backupEnemies;
 
-    /** Tracks whether the initial wave has been fully cleared. */
+    /** True once the first wave is fully defeated. */
     private boolean initialCleared;
 
     /**
-     * Constructs a Level.
+     * Creates a level with initial and backup waves.
      */
     public Level(String difficulty, List<Enemy> initialEnemies, List<Enemy> backupEnemies) {
         this.difficulty     = difficulty;
@@ -27,10 +25,6 @@ public class Level {
         this.backupEnemies  = new ArrayList<>(backupEnemies);
         this.initialCleared = false;
     }
-
-    // -------------------------------------------------------------------------
-    // Getters
-    // -------------------------------------------------------------------------
 
     public String getDifficulty() {
         return difficulty;
@@ -44,42 +38,36 @@ public class Level {
         return new ArrayList<>(backupEnemies);
     }
 
-    // -------------------------------------------------------------------------
-    // Wave management
-    // -------------------------------------------------------------------------
-
     /**
-     * Returns whether the initial enemy wave has been fully cleared.
+     * Returns whether the first wave is cleared.
      */
     public boolean isInitialCleared() {
         return initialCleared;
     }
 
     /**
-     * Marks the initial wave as cleared. Should be called by BattleEngine
-     * when all initial enemies are dead and the backup has not yet spawned.
+     * Marks the first wave as cleared.
      */
     public void markInitialCleared() {
         this.initialCleared = true;
     }
 
     /**
-     * Provides the backup enemies for spawning.
-     * Returns a fresh copy so BattleEngine can mutate its own active list.
+     * Returns a copy of the backup wave.
      */
     public List<Enemy> spawnBackupEnemies() {
         return new ArrayList<>(backupEnemies);
     }
 
     /**
-     * Returns true if there are backup enemies available to spawn.
+     * Returns true if a backup wave exists.
      */
     public boolean hasBackup() {
         return !backupEnemies.isEmpty();
     }
 
     /**
-     * Returns the difficulty as a numeric level number.
+     * Maps difficulty text to a level number.
      */
     public int getLevelNo() {
         return switch (difficulty.toLowerCase()) {

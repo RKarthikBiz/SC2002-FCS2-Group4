@@ -4,14 +4,12 @@ import com.combatarena.domain.combatants.Combatant;
 
 
 /**
- * Action interface - represents any action a Combatant can perform on their turn.
+ * Represents one action a combatant can take during a turn.
  */
 public interface Action {
     /**
-     * Executes the action.
-     *
-     * @param attacker the Combatant performing the action
-     * @param target   the Combatant receiving the action
+     * Runs the action.
+     * attacker is the unit acting, and target is the unit being acted on.
      */
     void execute(Combatant attacker, Combatant target);
 }

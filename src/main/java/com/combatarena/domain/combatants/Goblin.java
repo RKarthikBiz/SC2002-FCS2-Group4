@@ -7,7 +7,7 @@ import java.util.Arrays;
 public class Goblin extends Enemy {
 
     /**
-     * Constructor to initialize a Goblin with default attributes.
+    * Creates a goblin and assigns a random title.
      */
     public Goblin(String name, int hp, int attack, int defense, int speed) {
         super(name, hp, attack, defense, speed);
@@ -16,11 +16,7 @@ public class Goblin extends Enemy {
     }
 
     /**
-     * Goblin's AI decision-making for combat actions. Goblins typically perform
-     * a basic attack. TODO: Implementation required by someone else - specific
-     * action implementation.
-     *
-     * @return A BasicAttack action (or null if not available)
+     * Goblins currently default to basic attack.
      */
     @Override
     public Action decideAction() {
@@ -28,17 +24,13 @@ public class Goblin extends Enemy {
     }
 
     /**
-     * Performs the Goblin's turn in combat. Calls the parent performTurn which
-     * uses decideAction().
+     * Flavor text for the goblin's turn.
      */
     @Override
     public void performTurn() {
         System.out.println(getName() + " lunges at its target.");
     }
 
-    /**
-     * Returns a string representation of the Goblin.
-     */
     @Override
     public String toString() {
         return "Goblin: " + super.toString();

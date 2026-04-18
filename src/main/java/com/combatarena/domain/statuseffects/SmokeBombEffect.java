@@ -3,11 +3,7 @@ package com.combatarena.domain.statuseffects;
 import com.combatarena.domain.combatants.Combatant;
 
 /**
- * SmokeBombEffect - grants evasion from enemy attacks for its duration.
- *
- * Mechanic: While this effect is active, the combatant blocks all incoming
- * enemy damage (sets it to 0). BattleEngine or Combatant.takeDamage() must
- * check for an active SmokeBombEffect and suppress incoming damage.
+ * Prevents incoming damage while active.
  */
 public class SmokeBombEffect implements StatusEffect {
     private int duration;
@@ -19,7 +15,6 @@ public class SmokeBombEffect implements StatusEffect {
 
     @Override
     public void apply(Combatant target) {
-        // System.out.println(target.getName() + " is obscured by a Smoke Bomb! Enemy attacks will deal 0 damage.");
     }
 
     @Override
@@ -29,7 +24,6 @@ public class SmokeBombEffect implements StatusEffect {
 
     @Override
     public void remove(Combatant target) {
-        // System.out.println("The smoke clears around " + target.getName() + ".");
     }
 
     @Override

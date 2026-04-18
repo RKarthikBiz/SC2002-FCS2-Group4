@@ -6,16 +6,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Abstract intermediate class representing a player character.
- * Extends Combatant with inventory management and special skill mechanics.
+ * Base class for player-controlled combatants.
  */
 public abstract class Player extends Combatant {
-    // Private attributes for encapsulation
     private List<Item> inventory;
     private int specialSkillCooldown;
 
     /**
-     * Constructor to initialize a player with core attributes.
+     * Creates a player with an empty inventory.
      */
     public Player(String name, int hp, int attack, int defense, int speed) {
         super(name, hp, attack, defense, speed);
@@ -24,10 +22,7 @@ public abstract class Player extends Combatant {
     }
 
     /**
-     * Uses an item from the player's inventory.
-     * Calls the item's use() method and removes it from inventory.
-     *
-     * @param item The item to use
+        * Uses an item if it exists in inventory.
      */
     public void useItem(Item item) {
         if (item != null && inventory.contains(item)) {
@@ -37,8 +32,7 @@ public abstract class Player extends Combatant {
     }
 
     /**
-     * Uses the player's special skill if it's not on cooldown.
-     * This method should be overridden by subclasses to implement specific special skills.
+        * Basic special-skill behavior with cooldown handling.
      */
     public void useSpecialSkill() {
         if (specialSkillCooldown <= 0) {
@@ -50,8 +44,7 @@ public abstract class Player extends Combatant {
     }
 
     /**
-     * Decrements the special skill cooldown by 1.
-     * Should be called each turn to track cooldown.
+        * Reduces skill cooldown by one turn.
      */
     public void decrementCooldown() {
         if (specialSkillCooldown > 0) {
@@ -60,13 +53,10 @@ public abstract class Player extends Combatant {
     }
 
     /**
-     * Performs the player's turn in combat.
-     * This abstract method must be implemented by concrete player subclasses.
+        * Called when this player takes a turn.
      */
     @Override
     public abstract void performTurn();
-
-    // Getters and Setters for all attributes
 
     public List<Item> getInventory() {
         return new ArrayList<>(inventory);
@@ -77,9 +67,7 @@ public abstract class Player extends Combatant {
     }
 
     /**
-     * Adds an item to the player's inventory.
-     *
-     * @param item The item to add
+        * Adds one item to inventory.
      */
     public void addItem(Item item) {
         if (item != null) {
@@ -88,36 +76,28 @@ public abstract class Player extends Combatant {
     }
 
     /**
-     * Removes an item from the player's inventory.
-     *
-     * @param item The item to remove
+     * Removes one item from inventory.
      */
     public void removeItem(Item item) {
         inventory.remove(item);
     }
 
     /**
-     * Gets the current special skill cooldown.
-     *
-     * @return The cooldown count
+     * Current cooldown value.
      */
     public int getSpecialSkillCooldown() {
         return specialSkillCooldown;
     }
 
     /**
-     * Sets the special skill cooldown.
-     *
-     * @param cooldown The cooldown count
+     * Sets cooldown and clamps it to non-negative values.
      */
     public void setSpecialSkillCooldown(int cooldown) {
         this.specialSkillCooldown = Math.max(0, cooldown);
     }
 
     /**
-     * Checks if the special skill is available (not on cooldown).
-     *
-     * @return true if cooldown is 0 or less, false otherwise
+     * Returns true when the special skill is available.
      */
     public boolean isSpecialSkillAvailable() {
         return specialSkillCooldown <= 0;

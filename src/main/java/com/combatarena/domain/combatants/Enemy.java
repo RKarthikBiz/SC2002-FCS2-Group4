@@ -10,8 +10,7 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * Abstract intermediate class representing an enemy combatant.
- * Extends Combatant with AI decision-making for combat actions.
+ * Base class for enemy units that choose actions through AI.
  */
 public abstract class Enemy extends Combatant {
     private static final Random RANDOM = new Random();
@@ -19,7 +18,7 @@ public abstract class Enemy extends Combatant {
     private List<String> namePool;
 
     /**
-     * Constructor to initialize an enemy with core attributes.
+        * Creates an enemy with base stats.
      */
     public Enemy(String name, int hp, int attack, int defense, int speed) {
         super(name, hp, attack, defense, speed);
@@ -27,11 +26,7 @@ public abstract class Enemy extends Combatant {
     }
 
     /**
-     * Abstract method for enemy AI to decide what action to take.
-     * Concrete enemy subclasses must implement this to define their unique behavior.
-     * TODO: Implementation required by someone else - AI decision logic.
-     * 
-     * @return The action the enemy decides to perform
+        * Returns the action this enemy wants to perform this turn.
      */
     public abstract Action decideAction();
 
@@ -48,9 +43,7 @@ public abstract class Enemy extends Combatant {
     }
 
     /**
-     * Performs the enemy's turn in combat.
-     * This method calls decideAction() to determine what the enemy should do.
-     * Concrete enemy subclasses may override this for custom turn behavior.
+        * Default turn behavior.
      */
     @Override
     public void performTurn() {

@@ -7,11 +7,9 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Abstract base class representing a combatant in the combat arena.
- * Defines core attributes and methods for all combatants (players and enemies).
+ * Base type for all player and enemy units.
  */
 public abstract class Combatant {
-    // Private attributes for encapsulation
     private String name;
     private int hp;
     private int maxHp;
@@ -21,7 +19,7 @@ public abstract class Combatant {
     private List<StatusEffect> statusEffects;
 
     /**
-     * Constructor to initialize a combatant with core attributes.
+        * Creates a combatant with base stats.
      */
     public Combatant(String name, int hp, int attack, int defense, int speed) {
         this.name = name;
@@ -37,8 +35,6 @@ public abstract class Combatant {
      * Reduces HP by the provided post-mitigated damage amount.
      * HP is clamped at 0.
      * If SmokeBombEffect is active, incoming damage is suppressed to 0.
-     *
-     * @param amount final damage value to apply
      */
     public void takeDamage(int amount) {
         if (hasSmokeBombEffect()) {
@@ -48,9 +44,7 @@ public abstract class Combatant {
     }
 
     /**
-     * Checks if SmokeBombEffect is currently active on this combatant.
-     *
-     * @return true if SmokeBombEffect is active, false otherwise
+        * Checks whether smoke protection is active.
      */
     private boolean hasSmokeBombEffect() {
         for (StatusEffect effect : statusEffects) {
@@ -64,27 +58,20 @@ public abstract class Combatant {
     /**
      * Heals the combatant by the specified amount.
      * HP cannot exceed maxHp.
-     *
-     * @param amount The amount to heal
      */
     public void heal(int amount) {
         this.hp = Math.min(this.maxHp, this.hp + amount);
     }
 
     /**
-     * Checks if the combatant is still alive.
-     *
-     * @return true if hp > 0, false otherwise
+        * Returns true when HP is above zero.
      */
     public boolean isAlive() {
         return this.hp > 0;
     }
 
     /**
-     * Applies a status effect to this combatant.
-     * Uses the StatusEffect's apply method and adds it to the list.
-     *
-     * @param effect The status effect to apply
+        * Applies an effect and tracks it as active.
      */
     public void applyStatusEffect(StatusEffect effect) {
         if (effect != null) {
@@ -94,10 +81,7 @@ public abstract class Combatant {
     }
 
     /**
-     * Adds a status effect to the combatant's status effects list.
-     * This is an alternative method for managing the statusEffects collection.
-     *
-     * @param effect The status effect to add
+        * Adds an effect directly if it is not already present.
      */
     public void addStatusEffect(StatusEffect effect) {
         if (effect != null && !statusEffects.contains(effect)) {
@@ -122,11 +106,9 @@ public abstract class Combatant {
     }
 
     /**
-     * Abstract method to be implemented by subclasses to define behavior during a turn.
+        * Called when this combatant takes a turn.
      */
     public abstract void performTurn();
-
-    // Getters and Setters for all attributes
 
     public String getName() {
         return name;
@@ -188,9 +170,7 @@ public abstract class Combatant {
     }
 
     /**
-     * Removes a status effect from this combatant.
-     *
-     * @param effect The status effect to remove
+        * Removes one active effect.
      */
     public void removeStatusEffect(StatusEffect effect) {
         if (effect != null) {
@@ -200,14 +180,14 @@ public abstract class Combatant {
     }
 
     /**
-     * Clears all status effects from this combatant.
+        * Clears every active effect.
      */
     public void clearStatusEffects() {
         statusEffects.clear();
     }
 
     /**
-     * Returns a string representation of the combatant.
+        * Returns a compact summary of this combatant.
      */
     @Override
     public String toString() {

@@ -2,6 +2,9 @@ package com.combatarena.domain.statuseffects;
 
 import com.combatarena.domain.combatants.Combatant;
 
+/**
+ * Stun effect that wears off after its duration reaches zero.
+ */
 public class StunEffect implements StatusEffect {
     private int duration;
     private final String name = "Stun";
