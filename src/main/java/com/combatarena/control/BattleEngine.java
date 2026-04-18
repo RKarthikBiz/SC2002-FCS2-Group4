@@ -35,10 +35,6 @@ import java.util.List;
  */
 public class BattleEngine {
 
-    // -------------------------------------------------------------------------
-    // Fields
-    // -------------------------------------------------------------------------
-
     private final TurnOrderStrategy turnStrategy;
     private Level currentLevel;
     private final List<Enemy> activeEnemies;
@@ -63,9 +59,7 @@ public class BattleEngine {
     /** Tracks how much damage the player has taken in the current round. */
     private int damageTakenThisRound;
 
-    // -------------------------------------------------------------------------
-    // Constructor
-    // -------------------------------------------------------------------------
+
 
     public BattleEngine(TurnOrderStrategy turnStrategy, Level level,
                         Player player, GameCLI gameCLI) {
@@ -168,7 +162,7 @@ public class BattleEngine {
                 incrementCombo();
             }
 
-            // Loot drop check — did the player kill the target?
+            // Loot drop check 
             if (!target.isAlive()) {
                 checkLootDrop((Enemy) target);
             }
@@ -236,7 +230,6 @@ public class BattleEngine {
      * permanent bonuses (e.g. Wizard's Arcane Blast kills) intact.
      */
     public void resetCombo() {
-        // Reverse only the combo-applied bonus, not other attack changes
         if (comboBonusApplied > 0) {
             player.setAttack(Math.max(playerBaseAttack, player.getAttack() - comboBonusApplied));
             comboBonusApplied = 0;
@@ -407,8 +400,6 @@ public class BattleEngine {
      * Determines the combo damage reset threshold based on the current level's difficulty.
      */
     private int getComboDamageThreshold() {
-        // NOTE: If your Level class uses a different method name to get the difficulty level 
-        // (like getDifficulty() or getId()), change "getLevelNo()" to match it!
         int level = currentLevel.getLevelNo(); 
         switch(level) {
             case 1: return GameConstants.COMBO_THRESHOLD_EASY;

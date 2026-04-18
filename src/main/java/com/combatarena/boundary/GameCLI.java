@@ -24,16 +24,12 @@ public class GameCLI {
         this.scanner = new Scanner(System.in);
     }
 
-    /**
-     * Dependency Injection: Links the engine to the CLI so the CLI
-     * can fetch player and enemy stats for display.
-     */
     public void setBattleEngine(BattleEngine battleEngine) {
         this.battleEngine = battleEngine;
     }
 
     /**
-     * Kicks off the game loop inside the BattleEngine.
+     * Starts the game loop inside the BattleEngine.
      */
     public void start() {
         System.out.println();
