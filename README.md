@@ -4,6 +4,7 @@
 | Name | Matriculation Number |
 |------|-----------|--------|
 | Qaizar Shabbar Jambughodawala  | U2521184H       | 
+| R Karthik | U2423717J |
 
 ## How to Run
 1. Clone the repo
