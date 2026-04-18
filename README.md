@@ -5,6 +5,7 @@
 |------|-----------|--------|
 | Qaizar Shabbar Jambughodawala  | U2521184H       | 
 | R Karthik | U2423717J |
+| Pek Yu Hng | U2521531L |
 
 ## How to Run
 1. Clone the repo
