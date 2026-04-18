@@ -2,7 +2,8 @@
 
 ## Group Members
 | Name | Matriculation Number |
-|------|-----------|--------|
+|------|----------------------|
+| Raj Yash | U2523003J |
 | Qaizar Shabbar Jambughodawala  | U2521184H       | 
 | R Karthik | U2423717J |
 | Pek Yu Hng | U2521531L |
